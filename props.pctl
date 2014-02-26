@@ -1,0 +1,34 @@
+// finds states with the maximum value
+filter(max, (<<2>> Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+<<2>> Pmax=? [ G !(recdBitsO=N+1|resultO=1) ]), true)
+
+// prints all values
+filter(print, (<<2>> Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+<<2>> Pmax=? [ G !(recdBitsO=N+1|resultO=1) ])>1+1/N, true)
+
+// corresponds to the property in the paper
+(<<2>> Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+<<2>> Pmax=? [ G !(recdBitsO=N+1|resultO=1) ])>(1+1/4)
+
+// first part of the property
+// R can get the contract
+<<2>> Pmax=? [ F (recdBitsR=N+1|resultR=1) ]
+
+// O can get the contract
+<<1>> Pmax=? [ F (recdBitsO=N+1|resultO=1) ]
+
+// second part of the property
+// R can stop O getting the contract
+<<2>> Pmax=? [ G !(recdBitsO=N+1|resultO=1) ]
+
+filter(print, (<<1>> Pmax=? [ F (recdBitsO=N+1|resultO=1) ]+<<1>> Pmax=? [ G !(recdBitsR=N+1|resultR=1) ])>1+1/N, true)
+
+filter(max, (<<1>> Pmax=? [ F (recdBitsO=N+1|resultO=1) ]+<<1>> Pmax=? [ G !(recdBitsR=N+1|resultR=1) ]), true)
+
+filter(print, (<<2>> Pmax=? [G((recdBitsR=N+1|resultR=1)&!(recdBitsO=N+1|resultO=1))]), true)
+
+filter(print, (<<1>> Pmax=? [G((recdBitsO=N+1|resultO=1)&!(recdBitsR=N+1|resultR=1))]), true)
+
+filter(max, Pmax=? [G((recdBitsR=N+1|resultR=1)&!(recdBitsO=N+1|resultO=1))], true)
+
+Pmax=? [F ((recdBitsR=N+1|resultR=1) & (G !(recdBitsO=N+1|resultO=1)))]
+
+filter(print, ((Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+ Pmax=? [ G !(recdBitsO=N+1|resultO=1) ])>1+1/N), true)
+
