@@ -38,6 +38,7 @@ module partyO
 	//[ignoreR] turnO=0 -> (turnO'=1);
 	//[endO] turnO=1 & (resultO>0 | recdBitsO=N+1) & !(contactO=1 & resultO=0) -> (turnO'=2);
 	[endR] turnO=0-> (turnO'=1);
+	[endR] turnO=2-> (turnO'=2);
 
 endmodule
 
