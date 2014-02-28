@@ -70,8 +70,9 @@ module partyR
 	[ignoreO] turnR=0 -> (turnR'=1);
 
 	[endO] turnR=0 -> (turnR'=1);
+	[endO] turnR=2 -> (turnR'=2);
 	//[endR] turnR=1 & (resultR=1 | recdBitsR=N+1)  & !(contactR=1 & resultR=0) -> (turnR'=2);
-	
+
 
 endmodule
 
