@@ -1,5 +1,4 @@
-//smg
-mdp
+smg
 const int N;
 
 player playerO
@@ -41,6 +40,7 @@ module partyO
 	[endTurnR] turnO=2 -> (turnO'=2);
 	[endO] turnO=1 & (resultO=1 | recdBitsO=N+1) & !(contactO=1 & resultO=0) -> (turnO'=2);
 	[endR] turnO=0-> (turnO'=1);
+	[endR] turnO=2-> (turnO'=2);
 
 endmodule
 
@@ -68,6 +68,7 @@ module partyR
 	[endTurnO] turnR=0 -> (turnR'=1);
 	[endTurnO] turnR=2 -> (turnR'=2);
 	[endO] turnR=0 -> (turnR'=1);
+	[endO] turnR=2 -> (turnR'=2);
 	[endR] turnR=1 & (resultR=1 | recdBitsR=N+1)  & !(contactR=1 & resultR=0) -> (turnR'=2);
 
 endmodule
