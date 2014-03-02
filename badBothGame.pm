@@ -18,22 +18,14 @@ module partyO
 
         [begin] turnO=0 -> (turnO' = 1);
 
-
-
 	// sends providing there are still commitments left, the other party hasn't ignored the previous turn, and the party isn't TTPing
-        [sendO] turnO=1 & sentBitsO<(N+1) & recdBitsO=sentBitsO  & !(contactO=1 & resultO=0) -> (sentBitsO'=sentBitsO+1);
+        [sendO] turnO=1 & sentBitsO<(N+1) & !(contactO=1 & resultO=0) -> (sentBitsO'=sentBitsO+1);
 	//recieves bit providing there's still commitments needed; if its the last one, end the transaction by going to state 2
         [sendR] turnO=0 & recdBitsO<N+1 & !(contactO=1 & resultO=0) -> (recdBitsO' = recdBitsO+1);
       
-	//if in finished state, loop
-        //[] turnO=2 & turnR=2 -> (turnO'=2);
 	//can contact TTP provided it hasn't done so and no. of recieved bits between 1 and N - otherwise unnecessary
         [reqO] turnO=1 & !(contactO=1) & recdBitsO<=N & recdBitsO>=1 -> (contactO'=1);
         [replyO] sendO=1 ->(resultO'=responseO);
-
-	//doesnt send a commitment; provided its not TTPing
-	//[ignoreO] false & turnO=1 & !(contactO=1 & resultO=0) -> (turnO'=0);
-	//[ignoreR] turnO=0 -> (turnO'=1);
 
 	[endTurnO] turnO=1 & !(contactO=1 & resultO=0) -> (turnO'=0);
 	[endTurnR] turnO=0 -> (turnO'=1);
@@ -55,16 +47,12 @@ module partyR
 
         [sendO] turnR=0 & recdBitsR<N+1 & !(contactR=1 & resultR=0) -> (recdBitsR' = recdBitsR+1);
         
-        [sendR] turnR=1 & sentBitsR<(N+1) & recdBitsR=sentBitsR+1 & !(contactR=1 & resultR=0) -> (sentBitsR'=sentBitsR+1);
+        [sendR] turnR=1 & sentBitsR<(N+1) &!(contactR=1 & resultR=0) -> (sentBitsR'=sentBitsR+1);
 
-	[reqR] turnR=1  & !(contactR=1 & resultR=0) & resultR=0 & recdBitsR<=N & recdBitsR>=1  -> (contactR'=1);
+	[reqR] turnR=1  & !(contactR=1) & recdBitsR<=N & recdBitsR>=1  -> (contactR'=1);
         [replyR] sendR=1 ->(resultR'=responseR);
 
-	//[ignoreR] turnR=1 & !(contactR=1 & resultR=0) -> true;
-	//[ignoreO] turnR=0 -> (turnR'=1);
-
-	[endTurnR] turnR=1 & !(contactR=1 & resultR=0) & turnR=1 -> (turnR'=0);
-
+	[endTurnR] turnR=1 & !(contactR=1 & resultR=0) -> (turnR'=0);
 	[endTurnO] turnR=0 -> (turnR'=1);
 	[endTurnO] turnR=2 -> (turnR'=2);
 	[endO] turnR=0 -> (turnR'=1);
