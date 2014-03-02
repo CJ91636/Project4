@@ -30,7 +30,7 @@ module partyO
 	//can contact TTP provided it hasn't done so and no. of recieved bits between 1 and N - otherwise unnecessary
 	[reqO] turnO=1 & !(contactO=1) & recdBitsO<=N & (recdBitsO>=1) & (!(resultR=0) | !(recdBitsO=sentBitsO)) -> (contactO'=1);
         [replyO] sendO=1 ->(resultO'=responseO) & (turnO'=2);
-	
+
 	[endR] turnO=0-> (turnO'=1);
 	[endR] turnO=2 -> (turnO'=2);
 
@@ -44,10 +44,10 @@ module partyR
 	resultR : [0..2];
 
         [begin] turnR=0 -> (turnR'=0);
+      
+        [sendR] turnR=1 & sentBitsR<(N+1) & !(contactR=1 & resultR=0) -> (sentBitsR'=sentBitsR+1);
 
         [sendO] turnR=0 & recdBitsR<N+1 & !(contactR=1 & resultR=0) -> (recdBitsR' = recdBitsR+1) & (turnR'=1);
-        
-        [sendR] turnR=1 & sentBitsR<(N+1) & recdBitsR=sentBitsR+1 & !(contactR=1 & resultR=0) -> (sentBitsR'=sentBitsR+1);
 
 	[reqR] turnR=1  & !(contactR=1 & resultR=0) & resultR=0 & recdBitsR<=N & recdBitsR>=1  -> (contactR'=1);
         [replyR] sendR=1 ->(resultR'=responseR);
