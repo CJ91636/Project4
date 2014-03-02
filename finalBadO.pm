@@ -19,7 +19,7 @@ module partyO
 
         [begin] turnO=0 -> (turnO' = 1);
 	// sends providing there are still commitments left, the other party hasn't ignored the previous turn, and the party isn't TTPing
-        [sendO] turnO=1 & sentBitsO<(N+1) & recdBitsO=sentBitsO  & !(contactO=1 & resultO=0) -> (sentBitsO'=sentBitsO+1);
+        [sendO] turnO=1 & sentBitsO<(N+1) & !(contactO=1 & resultO=0) -> (sentBitsO'=sentBitsO+1);
 	//recieves bit providing there's still commitments needed; if its the last one, end the transaction by going to state 2
         [sendR] turnO=0 & recdBitsO<N+1 & !(contactO=1 & resultO=0) -> (recdBitsO' = recdBitsO+1) & (turnO' = 1);
 
@@ -92,3 +92,5 @@ module tTP
 
         [replyO] sendO=1 -> (sendO'=0) ;
         [replyR] sendR=1 -> (sendR'=0) ;
+
+endmodule
