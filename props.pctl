@@ -4,6 +4,50 @@ filter(max, (<<2>> Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+<<2>> Pmax=? [ G !(rec
 // prints all values
 filter(print, (<<2>> Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+<<2>> Pmax=? [ G !(recdBitsO=N+1|resultO=1) ])>1+1/N, true)
 
+filter(max, (<<1>> Pmax=? [ F (recdBitsO=N+1|resultO=1) ]+<<1>> Pmax=? [ G !(recdBitsR=N+1|resultR=1) ]), true)
+
+filter(print, (<<1>> Pmax=? [ F (recdBitsO=N+1|resultO=1) ]+<<1>> Pmax=? [ G !(recdBitsR=N+1|resultR=1) ])>1+1/N, true)
+
+filter(max, (<<2, 1>> Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+<<2, 1>> Pmax=? [ G !(recdBitsO=N+1|resultO=1) ]), true)
+
+filter(print, (<<2, 1>> Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+<<2, 1>> Pmax=? [ G !(recdBitsO=N+1|resultO=1) ])>1+1/N, true)
+
+filter(max, (<<2, 1>> Pmax=? [ F (recdBitsO=N+1|resultO=1) ]+<<2, 1>> Pmax=? [ G !(recdBitsR=N+1|resultR=1) ]), true)
+
+filter(print, (<<2, 1>> Pmax=? [ F (recdBitsO=N+1|resultO=1) ]+<<2, 1>> Pmax=? [ G !(recdBitsR=N+1|resultR=1) ])>1+1/N, true)
+
+filter(max, (<<2>> Pmax=? [ G ((recdBitsR=N+1|resultR=1)&!(recdBitsO=N+1|resultO=1)) ]), true)
+
+filter(print, (<<2>> Pmax=? [ G ((recdBitsR=N+1|resultR=1)&!(recdBitsO=N+1|resultO=1)) ])>1+1/N, true)
+
+filter(max, (<<1>> Pmax=? [ G ((recdBitsO=N+1|resultO=1)&!(recdBitsR=N+1|resultR=1)) ]), true)
+
+filter(print, (<<1>> Pmax=? [ G ((recdBitsO=N+1|resultO=1)&!(recdBitsR=N+1|resultR=1)) ])>1+1/N, true)
+
+filter(max, (<<2, 1>> Pmax=? [ G ((recdBitsR=N+1|resultR=1)&!(recdBitsO=N+1|resultO=1)) ]), true)
+
+filter(print, (<<2, 1>> Pmax=? [ G ((recdBitsR=N+1|resultR=1)&!(recdBitsO=N+1|resultO=1)) ])>1+1/N, true)
+
+filter(max, (<<2, 1>> Pmax=? [ G ((recdBitsO=N+1|resultO=1)&!(recdBitsR=N+1|resultR=1)) ]), true)
+
+filter(print, (<<2, 1>> Pmax=? [ G ((recdBitsO=N+1|resultO=1)&!(recdBitsR=N+1|resultR=1)) ])>1+1/N, true)
+
+filter(max, (<<2>> Pmax=? [ F ((recdBitsR=N+1|resultR=1)&(G !(recdBitsO=N+1|resultO=1))) ]), true)
+
+filter(print, (<<2>> Pmax=? [ F ((recdBitsR=N+1|resultR=1)&(G !(recdBitsO=N+1|resultO=1))) ])>1+1/N, true)
+
+filter(max, (<<1>> Pmax=? [ F ((recdBitsO=N+1|resultO=1)&(G !(recdBitsR=N+1|resultR=1))) ]), true)
+
+filter(print, (<<1>> Pmax=? [ F ((recdBitsO=N+1|resultO=1)&(G !(recdBitsR=N+1|resultR=1))) ])>1+1/N, true)
+
+filter(max, (<<2, 1>> Pmax=? [ F ((recdBitsR=N+1|resultR=1)&(G !(recdBitsO=N+1|resultO=1))) ]), true)
+
+filter(print, (<<2, 1>> Pmax=? [ F ((recdBitsR=N+1|resultR=1)&(G !(recdBitsO=N+1|resultO=1))) ])>1+1/N, true)
+
+filter(max, (<<2, 1>> Pmax=? [ F ((recdBitsO=N+1|resultO=1)&(G !(recdBitsR=N+1|resultR=1))) ]), true)
+
+filter(print, (<<2, 1>> Pmax=? [ F ((recdBitsO=N+1|resultO=1)&(G !(recdBitsR=N+1|resultR=1))) ])>1+1/N, true)
+
 // corresponds to the property in the paper
 (<<2>> Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+<<2>> Pmax=? [ G !(recdBitsO=N+1|resultO=1) ])>(1+1/4)
 
@@ -18,17 +62,33 @@ filter(print, (<<2>> Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+<<2>> Pmax=? [ G !(r
 // R can stop O getting the contract
 <<2>> Pmax=? [ G !(recdBitsO=N+1|resultO=1) ]
 
-filter(print, (<<1>> Pmax=? [ F (recdBitsO=N+1|resultO=1) ]+<<1>> Pmax=? [ G !(recdBitsR=N+1|resultR=1) ])>1+1/N, true)
+filter(max, Pmax=? [ G ((recdBitsR=N+1|resultR=1)&!(recdBitsO=N+1|resultO=1)) ], true)
 
-filter(max, (<<1>> Pmax=? [ F (recdBitsO=N+1|resultO=1) ]+<<1>> Pmax=? [ G !(recdBitsR=N+1|resultR=1) ]), true)
+Pmax=? [ F ((recdBitsR=N+1|resultR=1)&(G !(recdBitsO=N+1|resultO=1))) ]
 
-filter(print, (<<2>> Pmax=? [G((recdBitsR=N+1|resultR=1)&!(recdBitsO=N+1|resultO=1))]), true)
+filter(print, ((Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+Pmax=? [ G !(recdBitsO=N+1|resultO=1) ])>1+1/N), true)
 
-filter(print, (<<1>> Pmax=? [G((recdBitsO=N+1|resultO=1)&!(recdBitsR=N+1|resultR=1))]), true)
+filter(max, (Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+Pmax=? [ G !(recdBitsO=N+1|resultO=1) ]), true)
 
-filter(max, Pmax=? [G((recdBitsR=N+1|resultR=1)&!(recdBitsO=N+1|resultO=1))], true)
+filter(print, (Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+Pmax=? [ G !(recdBitsO=N+1|resultO=1) ])>1+1/N, true)
 
-Pmax=? [F ((recdBitsR=N+1|resultR=1) & (G !(recdBitsO=N+1|resultO=1)))]
+filter(max, (Pmax=? [ F (recdBitsO=N+1|resultO=1) ]+Pmax=? [ G !(recdBitsR=N+1|resultR=1) ]), true)
 
-filter(print, ((Pmax=? [ F (recdBitsR=N+1|resultR=1) ]+ Pmax=? [ G !(recdBitsO=N+1|resultO=1) ])>1+1/N), true)
+filter(print, (Pmax=? [ F (recdBitsO=N+1|resultO=1) ]+Pmax=? [ G !(recdBitsR=N+1|resultR=1) ])>1+1/N, true)
+
+filter(max, (Pmax=? [ G ((recdBitsR=N+1|resultR=1)&!(recdBitsO=N+1|resultO=1)) ]), true)
+
+filter(print, (Pmax=? [ G ((recdBitsR=N+1|resultR=1)&!(recdBitsO=N+1|resultO=1)) ])>1+1/N, true)
+
+filter(max, (Pmax=? [ G ((recdBitsO=N+1|resultO=1)&!(recdBitsR=N+1|resultR=1)) ]), true)
+
+filter(print, (Pmax=? [ G ((recdBitsO=N+1|resultO=1)&!(recdBitsR=N+1|resultR=1)) ])>1+1/N, true)
+
+filter(max, (Pmax=? [ F ((recdBitsR=N+1|resultR=1)&(G !(recdBitsO=N+1|resultO=1))) ]), true)
+
+filter(print, (Pmax=? [ F ((recdBitsR=N+1|resultR=1)&(G !(recdBitsO=N+1|resultO=1))) ])>1+1/N, true)
+
+filter(max, (Pmax=? [ F ((recdBitsO=N+1|resultO=1)&(G !(recdBitsR=N+1|resultR=1))) ]), true)
+
+filter(print, (Pmax=? [ F ((recdBitsO=N+1|resultO=1)&(G !(recdBitsR=N+1|resultR=1))) ])>1+1/N, true)
 
