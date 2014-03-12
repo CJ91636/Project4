@@ -5,6 +5,9 @@
 \usepackage{amsmath}%
 \usepackage{MnSymbol}%
 \usepackage{wasysym}%
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+
 %
 % put any packages here
 %
@@ -60,7 +63,7 @@ Chapters 4 to 6 focus on the construction of the models and in turn their analys
 
 Chapter 7 is the conclusion of the project, summarising findings, limitations of the projects and potential future areas of work concerning this specific protocol.
 
-\chapter{The Science}
+\chapter{Background}
 This section discusses and lays out the protocol described by Aizatulin, Schnoor and Wilke, found in \cite{ASW09}. There will also be a section detailing other types of CSPs that have been looked at. It then goes on to explain DTMCs, probabilistic model checking, and the tool of choice for building the model, PRISM.
 
 \section{DTMCs}
@@ -73,8 +76,9 @@ Discrete-time markov chains [DTMCs] are often used as a way to model probabilist
 \label{dtmc}
 \end{figure}
 
-
-A DTMC can be viewed as a tuple of the form $(S, S{_0}, P, L)$. The above diagram, \ref{dtmc}, describes a DTMC where:
+The diagram in figure \ref{dtmc} shows how a series of states can be using to represent a coin toss as a DTMC. The states are labelled to represent the current interaction with the coin; that is to say it's eith being flipped, or its displaying a ``heads'' or ``tails'' result. The arrows represnt the possibility of a transition from that state to another state, and are labelled with a number representing a probability. These are the probabilities that the state will select this transition.\\
+Here, there are only arrows between states that can reach one another. This means that there is no arrow from ``heads'' to ``tails''. as the coin must be flipped again to achieve a different result. However it would also be equivalent to have arrows from every state to every other sate, with appropriate probabilities of that transition being set to zero.
+A DTMC can also be represented as a tuple of the form $(S, S{_0}, P, L)$. The above diagram, \ref{dtmc}, describes a DTMC where:
 \begin{itemize}
 \item{$S$ is the set of possible states $\lbrace S_0, S_1, S_2, S_3 \rbrace $}
 \item{$S{_0}$ is the initial state}
@@ -101,6 +105,19 @@ Markov Decision Processes [MDPs] are similar to DTMCs. They both feature states 
 \label{mdp}
 \end{figure}
 
+The diagram at figure \ref{mdp} shows an extended version of the coin flipping example expressed as a DTMC model in figure \ref{dtmc}. Here, there are two coins that can be flipped, each with the same probability of landing a ``heads'' or a ``tails'' result. The difference here is that there is a choice between which coin is going to be flipped, the selections being noted by $a$ and $b$ on the diagram. As the choice is non-deterministic, there is nothing to indicate which coin will be selected, they are picked at random. This is the value that expanding to an MDP model brings, the seemingly random choosing between multiple options.
+
+Again, MDPs can can be represented in a similar fashion as DTMCs as a set of labels, possible states, starting state and a transtition matrix. The majority of these are equivalent to the versions expressed for a DTMC, however the transition probability matric has a notable difference. Below is the transition probability matrix for the MDP in figure \ref{mdp}.\\
+
+\centerline{$P :\begin{bmatrix}
+0 & a & b & 0 & 0\\ 
+0 & 0 & 0 & 0.5 & 0.5\\ 
+0 & 0 & 0 & 0.5 & 0.5\\ 
+1 & 0 & 0 & 0 & 0\\ 
+1 & 0 & 0 & 0 & 0
+\end{bmatrix}$}
+
+Note here how the property of state transitions horizontally equalling one is no longer applicable. The first row of the matrix sums to equal $a+b$; this is due to the introduction of real choice. It i s a non-deterministic decision that determines the transition from the first state, rather than probability being the deciding factor.
 
 
 \section{SMGs}
@@ -108,12 +125,36 @@ Markov Decision Processes [MDPs] are similar to DTMCs. They both feature states 
 
 Stochastic multiplayer games, [SMGs], are an extension to MDPs. Rather than having just a series of states a model can move into, it allows the modelling of a turn based style interaction to reflect reflective or competitive interaction. This is beneficial as it allows a more realistic interaction than an MDP; players can be more effectively given aims and act in specific ways to try and reach certain outcomes. 
 
-The difference between an SMG and an MDP is the way way each traversal option in a game has to be associated to a player. Moves can be non-deterministic or probabilistic, as in MDPs, but transition is "performed" by one participant. The culmination of these transitions can be used to evaluate a strategy; with the move-set of a party defined, it is possible to determine what actions each party would need to take to reach a specific outcome. The coin example being used so far isn't able to demonstrate the full power of SMGs, so I came up with a new example. Totes jokes, I've neh idea.
+The difference between an SMG and an MDP is the way way each traversal option in a game has to be associated to a player. Moves can be non-deterministic or probabilistic, as in MDPs, but transition is "performed" by one participant. The culmination of these transitions can be used to evaluate a strategy; with the move-set of a party defined, it is possible to determine what actions each party would need to take to reach a specific outcome. The coin example being used so far isn't ideal for displaying this, as there is no competitive aspect to it; however it could still be modelled as an SMG.
+
+It would be possible to have two parties, a ``picker'' and a ``flipper''. The picker would select which coin was flipped, and the flipper would then flip the coin to get the result. To model this as an SMG, the ``picker'' would be assigned the transitions from ``pick'' to the possible outcomes of that decision, namely S$_1$ and S$_2$. This would mean that the picking action is attributed to the ``picker'' party. The ``flipper'' is assigned moves that represent the flipping on the coin, namely the transitions from coins $a$ and $b$ to the possible outcomes, $Heads$ and $Tails$. A strategy could then be formed to show how the state of $Heads$ could be reached. That strategy could be represented in a table style form, as shown in table \ref{smgTable}.
+
+\begin{table}[]
+\centering
+\begin{tabular}{ c || c || c }
+  \hline                       
+  Party & Action & Outcome \\
+  \hline
+  picker & Select coin & a  \\
+  flipper & Flip coin (a) & Tails \\
+  picker & Select coin & b \\
+  flipper & Flip coin (b) & Heads \\
+  \hline  
+\end{tabular}
+\caption{A table showing how SMGs link transitions to parties}
+\label{smgTable}
+\end{table}
+
+The table shows what would happen if the first flipping of a coin yielded $Tails$ instead of heads the first time. The picker non-deterministically selects coin $a$. The flipper then flips the coin, and has a result of $Tails$, with 0.5 being the probability of that result. The picker then picks again non-determinstically, this time opting for coin $b$. Note that this choice has not been impacted by the previous result; the choice form the picker is always random, with no factors that contribute to the overall decision. The flipper then flips the coin, yielding the desired $Heads$ result.
+
+
 
 \section{Probabilistic Model Checking}
 
 
-Probabilistic model checking [PMC] allows a model the be analysed, giving probabilities of outcomes based on the information provided in the model itself. This method of analysis lends itself well to the verification of real world systems, and has many applications such as the analysis of failure probabilities to the application here, the probabilities of different outcomes in a contract signing protocol. There are many types of models that are covered by probabilistic model checking, adn three that are important to this project; Discrete Time Markov Chains, Markov Decision Processes, and Stochastic Game Models. Each of these will be discussed later in this section, with an explanation as to how and why.
+Probabilistic model checking [PMC] allows a model the be analysed, giving probabilities of outcomes based on the information provided in the model itself. This method of analysis lends itself well to the verification of real world systems, and has many applications such as the analysis of failure probabilities to the application here, the probabilities of different outcomes in a contract signing protocol. There are many types of models that are covered by probabilistic model checking, and three that are important to this project; Discrete Time Markov Chains, Markov Decision Processes, and Stochastic Game Models. Each of these have been discussed above, and here we will look at how exactly they translate.
+
+ Model checking is advantageous to simply relying on frequent manual simulation, for two main reasons. Firstly, the size and complexity of these systems mean relying on manual testing would both be lengthy and likely erroneous. The second reason manual testing the system is the unpredictability of a system based on non-determinism; there are case where planning every set of possible outcomes and choices would be near impossible, it is far more preferable to have PRISM check all possible states and transition options.
 
 \subsection{The PRISM Model Checker}
 
@@ -131,9 +172,77 @@ Declaring variables constant externally to any modules allow user input at run t
 
 Logic is applied directly in PRISM; $ \& $ for AND logic, $ \mid $ for OR logic, ! for NOT and = for equals. This logic can be applied in full in the guard, however ampersands are used to change multiple variables per update. (fix later)
 
-Where different modules feature commands with the same label, the conditions in all modules with that command label must be met for the commands to run, and the updates will happen together. If the case arises where there is a module with multiple commands with the same label, the conditions will decide which one is executed; if multiple commands feature both the same label and conditions that are met, PRISM will select one option to execute non-deterministically. This allows implementation of triggers across modules; for instance in one of the models featured in this project, when party "O" sends a commitment using command [sendO], the other party "R" features the command [sendO] with the condition "true". This leads to R being able to update a variable every time [sendO] is invoked.
+Where different modules feature commands with the same label, the conditions in all modules with that command label must be met for the commands to run, and the updates will happen together. If the case arises where there is a module with multiple commands with the same label, the conditions will decide which one is executed; if multiple commands feature both the same label and conditions that are met, PRISM will select one option to execute non-deterministically. 
+%This allows implementation of triggers across modules; for instance in one of the models featured in this project, when party "O" sends a commitment using command [sendO], the other party "R" features the command [sendO] with the condition "true". This leads to R being able to update a variable every time [sendO] is invoked.
 
-\subsubsection{Formulae in PRISM}
+\subsection{Example PRISM Models}
+
+The following models serve to demonstrate to the reader how the current examples of coin flipping can be modelled in the PRISM model checker. They are based on the examples seen in the previous chapter, showcase the coin flipping examples.
+
+\subsubsection{DTMC}
+
+The first such model shows how a DTMC model can be modelled in PRISM. The interaction being modelled is based on the coin example shown in figure \ref{dtmc}. A solution to modelling this in PRISM is shown below.
+
+\begin{verbatim}
+dtmc
+
+module coin
+
+  flipped : [0..1]; //1 for flipped, 0 for not
+  result : [0..2]; //1 for heads, 2 for tails
+
+  [flip] flipped=0 & result=0 
+    -> 0.5 : (result'=1) & (flipped'=1) 
+      + 0.5 : (result'=2) & (flipped'=1);
+  [reset] result!=0 & flipped=1 -> (result'=0) & (flipped'=0);
+	
+endmodule
+\end{verbatim}
+
+The first line, reading {\tt dtmc}, is what defines this as a DTMC model inside the PRISM model checker. It is important that models are labelled correctly; an MDP model is not executable when marked as a DTMC model. However, in some types of models there is overlap; it is possible to model DTMCs and declare them as MDP models.
+As can be seen, the coin itself has been expressed as a module. This demonstrates how real word objects can be abstracted into a PRISM module, not in a dissimilar way to how it can be done in an Object-Oriented style environment. Here, modules still have their own variables to represent different features or states of the module, and a set of executable commands. 
+\paragraph{Variables}
+\begin{description}
+\item[flipped] Stores the value that symbolises whether or not the coin has been flipped and would then have a result. 1 is used to represent that the coin has been flipped, a 0 means that it hasn't.
+\item[result] The result variable is used to store the current result of the coin flipping. 0 is no result, 1 is a heads result, and 2 shows a tails result.
+\end{description}
+
+\paragraph{Commands}
+\begin{description}
+\item[flip] The action that ``flips'' the coin. Takes a non-flipped coin, and then updates that coin's {\tt flipped} and {\tt result}. The {\tt result} variable then has a 0.5 chance of becoming $Heads$, or 1, and a 0.5 chance of being updated to $Tails$.
+\item[reset] Represents what would happen if the coin were to be ``reset'', or just picked up ready to be flipped again. As such, the variable {\tt flipped} is rest back to 0, to show the coin doesn't have a result displaying. As such, the {\tt result} variable is also set to 0, symbolising the coin no longer shows a face result.
+\end{description}
+
+Whilst the {\tt flip} action is easy to identify on the diagram at figure \ref{dtmc} as the transitions from the $Flip$ state to the $Heads$ and $Tails$ states, the {\tt reset} command isn't labelled. To be clear, {\tt reset} models the transitions from the results states $Heads$ and $Tails$ back to the $Flip$ state. It is also worth noting how when modelling the transactions, it is not necessary to model each one individually; by implementing the probabilistic changes in the update of the {\tt flip} command, both the transitions from the $Flip$ state can be modelled at once. 
+
+\subsubsection{MDP}
+
+It is also possible to construct MDP models in PRISM. Whilst, as stated above, it is possible to simply turn the previous DTMC model into an MDP, it is more beneficial to look at an example that shows commands that can be non-deterministic in nature. Therefore, the two coin example featured in figure \ref{mdp} has been modelled here as an MDP.
+
+\begin{verbatim}
+mdp
+
+module coin
+  coin : [0..2]; //1 for the honest coin, 2 for the rigged coin
+  flipped : [0..1]; //1 for flipped, 0 for not
+  result : [0..2]; //1 for heads, 2 for tails
+
+  [pick] flipped=0 & coin=0 & result=0 -> (coin'=1);
+  [pick] flipped=0 & coin=0 & result=0 -> (coin'=2);
+  [flip] flipped=0 & coin=1 & result=0 -> 0.5 : (result'=1) & (flipped'=1) + 0.5 : (result'=2) & (flipped'=1);
+  [flip] flipped=0 & coin=2 & result=0 -> 0.8 : (result'=1) & (flipped'=1) + 0.2 : (result'=2) & (flipped'=1);
+  [reset] result!=0 & flipped=1 -> (result'=0) & (flipped'=0) & (coin'=0);
+	
+endmodule
+\end{verbatim}
+
+There is only one new variable this time, {\tt coin}. This variable stores the con that has been picked, 0 being no selection as of yet, 1 is the normal coin, and 2 is the biased coin. There is also a new command, {\tt pick} that represents the transitions from the starting state to the coin states.
+
+Note here how there are two instances of both the {\tt pick} and {\tt flip} command. This is for different reasons. The {\tt pick} commands are selected by the model checker non-deterministically; there is no difference in the logic contained in the command guards, so either can be selected and both are always possible to select at the same time. The only difference is the outcome of that command, to be chosen at random.\\
+The two {\tt flip} commands are featured for a different reason however. Whereas before there where two commands required for the random style selection, there are now two commands based on the input to that command. There is now a difference in the guards; one command is design for use with the normal coin, one for use with the biased coin. As such, the two commands also feature different update values.
+
+
+\subsection{Formulae in PRISM}
 
 Due to the nature of probabilistic model checking, it is necessary for PRISM to be able to accommodate certain types of key operators and notations used in the field. These primarily come into use with the properties being assessed, rather than the model. Key things are:
 \begin{itemize}
@@ -142,21 +251,21 @@ Due to the nature of probabilistic model checking, it is necessary for PRISM to 
 \item $P{_{max}}$=$?$ provides the user with the maximum probability of a certain condition being fulfilled. This condition can incorporate both the $F$ and $G$ operators. 
 \end{itemize}
 
+\subsection{Properties in PRISM}
+
+To allow efficient analysis of the models in PRISM, it is possible to create properties in pACTL and have the system execute the model against the property and look at all the possibilities.
+
+
 \subsection{Prism for Games}
-There is an extension to PRISM which includes support for this, PRISM for Games {FINDCITE}. There is one key difference to how SMGs are portrayed in PRISM compared to MDPs. As well as modules, players themselves must be defined, and given a list of actions they can take on their turn. Here, the actions are the labels of the commands in the two modules, with some obvious exceptions; playerO is based on the module partyO, and cannot execute [sendR] and other "R" related commands on their turn, similarly for playerR and "O" based commands. This allows strategies to be created.
+There is an extension to PRISM which includes support for SMG style models, PRISM for Games {FINDCITE}.
+There is one key difference to how SMGs are portrayed in PRISM compared to MDPs. As well as modules, players themselves must be defined, and given a list of actions they can take on their turn. This allows the model checker to associate certain transitions with certain parties, allowing strategies to be built.
+\subsubsection{Games Properties}
+The properties in PRISM for Games work in an identical way to the properties used for the other types of models; however it is now possible to create a strategy to achieve a goal laid out in a property. It also possible to force the model checker to act in such a way that only certain parties participate in the creation of such a strategy; this type of behaviour is particularly beneficial if one wants to determine how a particular party can force a particular outcome.
 
 
 \chapter{The Protocol}
-The basis for this project is the constract signing protocol detailed by Aizatulin, Schnoor and Wilke in \cite{ASW09}. It is a probabilistic CSP which is capable of achieving a high degree of fairness, even when one party is attempting to sabotage the other party. The protocol takes a "gradual commitment" approach, and the steps of the protocol are laid out below. There are two parties here; party $O$, the originator, and party $R$, the responder.
+The basis for this project is the contract signing protocol detailed by Aizatulin, Schnoor and Wilke in \cite{ASW09}. The protocol takes a "gradual commitment" approach, and the steps of the protocol are laid out below. There are two parties here; party $O$, the originator, and party $R$, the responder. The originator is the party which initiates the protocol, by sending the first commitment. The responder is the party that the originator wishes to make an exchange with
 
-%\begin{verbatim}
-
- %           > O sends a commitment to R
-%            > R responds with a commitment to R
- %           > The above is repeated until their entire contract is sent
- %           > Both parties have the others contract
-
-%\end{verbatim}
 
 \begin{figure}[ht!]
 \centering
@@ -235,15 +344,30 @@ The second is that at no stage of the protocol do the honest party or the Truste
 
 \section{Corrupt}
 
-The requirement for a party to be determined as being corrupt or not is fundamental to the protocol; it's what they key property is based off. What the paper is lacking in however is a description of what it is to be corrupt. Therefore, a corrupt party has been assumed to be capable of any action at any point during it's turn. It is capable of sending commitments regardless of what has been received from the other party, can refuse to send a commitment at all during it's turn, and can contact the TTP during any stage of the protocol where it is able to select an action.
+The requirement for a party to be determined as being corrupt or not is fundamental to the protocol; it's a key definition that is used to explain this protocols beneficial unbalance property. What the paper is lacking in however is a description of what it is to be corrupt. It is important that the modelling of a corrupt party reflects as many possible actions as a corrupt party could take in a real life situation. Therefore, a corrupt party has been assumed to be capable of any action at any point during it's turn. It is capable of sending commitments regardless of what has been received from the other party, can refuse to send a commitment at all during it's turn, and can contact the TTP during any stage of the protocol where it is able to select an action. This means that it can send multiple commitments in a round, behaviour which any honest party would treat as suspicious.
 
 \section{Honest}
 
-Honesty is also a key concept that requires definition. Here, it has been assumed that an honest party has a more restricted level of interaction than that of a corrupt party. An honest party will only send a commitment if and only if the other party has sent commitments appropriately; that is, an honest party will only refuse to send commitments if it has reason to be suspicious of the other party. Suspicious activity here has been treated as failing to send a commitment. An honest party can also contact the TTP at any stage for it's turn, however if it does so it will not be able to send a commitment that turn; the honest party must chose between sending a commitment or contacting the TTP.
+Honesty is also a key concept that requires definition due to the description of the unbalacne property. Here, it has been assumed that an honest party has a more restricted level of interaction than that of a corrupt party. An honest party will only send a commitment if and only if the other party has sent commitments appropriately; that is, an honest party will only refuse to send commitments if it has reason to be suspicious of the other party. Suspicious activity here has been treated as failing to send a commitment. An honest party can also contact the TTP at any stage for it's turn, however if it does so it will not be able to send a commitment that turn; the honest party must chose between sending a commitment or contacting the TTP.
 
 \section{Fairness}
 
-Throughout the scope of this project, a fair protocol will be treated as one that either everyone is successful or no-one is. Being fair is almost the same as being balanced, but not quite. More to come. 
+Any protocol that deals with multiple parties should be fair. Fair here is used to describe a protocol that does not give an advantage to one party at the end of the interaction. Either both parties are successful or neither is; similar to a NOT XOR logic gate. The table at \ref{fair} below shows the possible outcomes of the protocol in terms of which parties receive the contract, and each will be labelled to indicate whether this is a fair or unfair outcome.
+
+\begin{table}[]
+\centering
+\begin{tabular}{c|c || c}
+ Originator Result & Responder Result & Fair?  \\
+ \hline
+ Successful & Successful & Yes \\
+  Successful & Unsuccessful & No \\
+    Unsuccessful & Successful & No \\
+      Unsuccessful & Unsuccessful & Yes
+ 
+\end{tabular}
+\caption{A table showing which outcomes of the protocol are considered fair}
+\label{fair}
+\end{table}
 
 \section{Related Works}
 
@@ -253,7 +377,7 @@ Rabins protocol is a non-optimistic CSP. This means it involves interaction with
 \begin{lstlisting}
     I am committed to C, if integer i is chosen on date D.
 \end{lstlisting}
-A send this to B, who then replies with the same message. Party A would the retransmit with the "i" updated to "i+1". The idea here is that provided B responds when they are contacted by A each time, when the integer between 1 and N is transmitted daily by the third party, if that integer fulfils one parties promise, it will also fulfil a promise made by the other party. There is a risk however that transmission is not always guaranteed by both parties; consider the situation where A sends a commitment immediately prior to the transmission. Consider here what would happen should the transmitted integer match the one proposed by A; B would be under no obligation to send their contract, unlike party A. This leads to the probability of only one party being committed in the termination state is 1/N.
+A send this to B, who then replies with the same message. Party A would the retransmit with the "i" updated to "i+1". The idea here is that provided B responds when they are contacted by A each time, when the integer between 1 and N is transmitted daily by the third party, if that integer fulfils one parties promise, it will also fulfil a promise made by the other party. There is a risk however that transmission is not always guaranteed by both parties; consider the situation where A sends a commitment immediately prior to the transmission. Consider here what would happen should the transmitted integer match the one proposed by A; B would be under no obligation to send their contract, unlike party A. This leads to the probability of only one party being committed in the termination state is $1/N$.
 
 The BGMR protocol is similar to Rabins in that it has the same goal - to allow  two parties to exchange commitments to a pre-defined contract. There is however a greater focus on the concepts of privilege and fairness. The protocol is such that it can never be the case that only one party can achieve the contract. The behaviour of the protocol is very much similar to that of Rabins, exact that instead of transmitting a target integer, the two parties send ever increasing probabilities the protocol will resolve before a deadline. Ideally, the parties reach the probability of one; however, if there is an issue with receiving an expecting commitment, the differences to Rabins begin. If a party contacts the third party, referred to as a judge, the judge takes not of the latest probability that the contract will be fulfilled. Then, after the deadline passes, the judge resolves the contracts for both parties with the probability stipulated in the the transmission to the judge. BGMR assumes that the transmissions between parties have  digital signatures that cannot be forged, meaning the judge does not need to be concerned with fraudulent requests.
 
@@ -263,57 +387,66 @@ The BGMR protocol is similar to Rabins in that it has the same goal - to allow  
 
 \chapter{DTMCs and the first Model}
 \section{Rationale}
- The first iteration of the model was built to accommodate the functionality expressed in \ref{csp}, the most simple interaction a CSP can fulfil. DTMC models are ideal for this type of interaction, as there is a limited number of actions that can be taken at any one point; there is a predictable style of interaction. Here, probabilities of moves are not required, which simplifies the model further, however, turns have been added, to ensure a player sends if and only if it's their turn. Below is the model built in PRISM for the first iteration, in full.
+ The first iteration of the model was built to accommodate the functionality expressed in \ref{csp}, the most simple interaction a CSP can fulfil. DTMC models are ideal for this type of interaction, as there is a limited number of actions that can be taken at any one point; there is a predictable style of interaction. Here, probabilities of moves are not required, which simplifies the model further, however, turns have been added, to ensure a player sends if and only if it's their turn. Below is the model built in PRISM for the first iteration, in full.\\
 
-\begin{lstlisting}
-dtmc
-const int N;
+\begin{center}
+\verbatiminput{dtmc.pm}
+\end{center}
 
-module partyO
-        sentBitsO : [0..N+1];
-        recdBitsO : [0..N+1];
-        turnO : [0..2];
-        
-        [begin] turnO=0 -> (turnO' = 1);
-    
-        [sendO] turnO=1 & sentBitsO<N+1 -> (sentBitsO'=sentBitsO+1) & (turnO' = 0);
+The naming conventions used in the model is slightly different to the one featured in the paper. This was primarily due to the length of the terms used in the paper, as well as other protocols of a similar nature using different key words. As such, included here is a list of the variables and commands featured in the model and and explanations to the purpose each is used for.
 
-        [sendR] turnO=0 & recdBitsO<N -> (recdBitsO' = recdBitsO+1) & (turnO' = 1);
+\begin{description}
+\item[variables]
+\item[sentBitsX] Represents the number of commitments that particular party has sent. With honestly playing parties, can be used to determine how many ``rounds'' have been completed.
+\item[recdBitsX] Represents the number of commitments a particular party has received during the protocol. Once a party has received $N+1$ of these, they are considered to have achieved the contract. These should at any stage be the same as the opponents $sentBitsX$ value, due to the buffer constraints mentioned previously.
+\item[turnX] Used to represent whose turn it is. Has three possible values; 0 symbolises that it isn't that parties turn. 1 is used to signal that it is that parties turn. 2 is used to represent that the party has finished.
+\item[N] Used by the model to store globally the predefined value of N. Accessed by all, changed by none.
+\item[commands]
+\item[begin] This is the first command to execute, determined by being the only command to be executable when both parties turn is set to 0. This sets the Originator's $turnO$ variable to 1 and the Responder's $turnR$ to 0, causing the Originator to go first. 
+\item[sendX] This command makes all the necessary changes to both modules to resemble sending a bit. Featured in both modules for each party, one command increases the senders $sendBitsX$ variable and sets that senders turn 0. The other command increments the recipients $recdBitsX$ variable and sets that party's turn variable to 1.
+\end{description}
 
-        [sendR] turnO=0 & recdBitsO=N ->  (recdBitsO' = recdBitsO+1) & (turnO' = 2);
+There is an additional, unlabelled command in the originator; this is designed to cause a loop when the aims of the protocol have been fulfilled and both parties have the contract they desire. Note here the corresponding commands in each module, noted by the same label. For these to be executable, the guards in both need to be satisfied. The reason for having these multiple commands is so that when say party $R$ sends a commitment, party $O$ can update its $recdBitsR$ variable and set its turn variable to 1; as stated previously, a command in one module cannot update values in another.
 
-        [] turnO=2 -> (turnO'=2);
-endmodule
-
-module partyR
-        sentBitsR : [0..N+1];
-        recdBitsR : [0..N+1];
-        turnR : [0..1];  
-
-        [begin] turnR=0 -> (turnR'=0);
-
-        [sendO] turnR=0 & recdBitsR<N+1 -> (recdBitsR' = recdBitsR+1) & (turnR'=1);
-        
-        [sendR] turnR=1 & sentBitsR<(N+1) -> (sentBitsR'=sentBitsR+1) & (turnR'=0);
-endmodule
-\end{lstlisting}  
-
-The variable sentBitsX is used to represent the number of commitments each party has sent, recdBitsX for the number of commitments received and turnX to represent which parties turn it is to send a commitment. Note here the corresponding commands in each module, noted by the same label.
-"Const int N;" allows the user to input what value N is for that specific run of the model.
 The model expresses the ideal protocol when both parties act honestly without contacting the TTP, using the definition of honesty found as described in the previous chapter. That is to say, both parties honour the exchange and send each other commitments until the entire contract has been received by both parties. 
 
 
 \section{Analysis}
 
-Analysis of the DTMC was concerned with ensuring that the model behaved in the predicted manner. Properties where created in PRISM to ensure the maximum probability of both parties gaining the contract was 1; this is because the parties should just send gradual commitments until both have achieved the protocol.\\
-It is also important here that the unbalance property is met, with there being no states where the probability of unbalance is no higher than the promised thresh hold of $(1+1/N)$. This was indeed the case, the probability of unbalance being 0; this is expected, as due to the inherent honest nature of the parties in this version of the model, it shouldn't be possible for one party to cheat the other out of getting the contract, even with the lack of a TTP.\\
+Analysis of the DTMC was concerned with ensuring that the model behaved in the predicted manner. A list of properties where created in PRISM to ensure that all possible outcomes of honest interaction where as they should be. This excludes interaction with the TTP; this model was designed purely to model achievement of the protocol by the use of the Gradual Commitment Protocol. The first of these such properties is as follows:
+
+\begin{lstlisting}
+            Pmax=? [((recdBitsR=N=1)&(recdBitsO=N+!))]
+\end{lstlisting}
+
+This property finds the maximum probability of both parties gaining the contract. The result of this was 1 as expected; this is because the parties send gradual commitments until both have achieved the protocol. This key as it meant that the most basic function of the protocol had been implemented; two parties could make gradual commitments until they were both satisfied by gaining the complete contract.
+
 The model was also checked for the case where neither party was able to achieve the contract; this was modelled by the property:
 
 \begin{lstlisting}
-                    Pmax=? [ G !((recdBitsR=N+1) | (recdBitsO=N+1)) ]
+                Pmax=? [ G !((recdBitsR=N+1) | (recdBitsO=N+1)) ]
 \end{lstlisting}
 
-The justification for checking this property is less trivial; although a protocol where this can happen is still to be considered fair, this should not happen here. It was vital to ensure that should two parties act in honesty for the duration of the protocol, then they will still be successful. This highlights the difference between a fair protocol and a balanced protocol. The maximum probability was indeed 0 as intended, as this variation of the model is purely designed for the two parties to send commitments until completion.
+The justification for checking this property is less trivial; although a protocol where this can happen is still to be considered fair, this should not happen here. It was vital to ensure that should the two parties act in honesty for the duration of the protocol, then they will still be successful. This highlights the difference between a fair protocol and a balanced protocol. The maximum probability was indeed 0 as intended.
+
+The final stage to ensuring that the model wasn't unfair was to ensure that it cannot be the case that only one party is successful. Here, that was assessed by a single property that represented both variations of the issue; one half ensured $O$ wasn't unfairly successful, the second half ensured the same for party $R$.
+
+\begin{lstlisting}
+     Pmax=? [ G ((recdBitsR=N+1)&!(recdBitsO=N+1) | (recdBitsO=N+1)&!(recdBitsR=N+1))]
+\end{lstlisting}
+
+This gave a maximum probability of 0, meaning that neither of these situations can arise, which was expected. It would also have been as equally valid to have two separate properties created to express each half of the above property.
+
+
+It is also important here that the unbalance property is met, with there being no states where the probability of unbalance is no higher than the promised thresh hold of $(1+1/N)$. Despite the fact both of these parties are honest, and there is no corrupt party present, there is no reason a party deemed to be corrupt in the model can't act as an honest party, so the property should still be checked. The unbalance property was modelled here as shown below.
+
+\begin{lstlisting}
+(Pmax=? [ F (recdBitsR=N+1)]) + (Pmax=? [ G !(recdBitsO=N+1)])
+\end{lstlisting}
+
+The probability of unbalance was shown to be zero; this is expected, as due to the inherent honest nature of the parties in this version of the model, it shouldn't be possible for one party to cheat the other out of getting the contract. The lack of a TTP shouldn't impact the results, as the states reachable here can be treated as a subset of the states possible in a fuller model; there's no requirement a party has to contact the TTP, therefore the states achieved here are fully possible in a full model.
+
+Due to the size and limited nature of the model, it is possible to show a complete run of the protocol via manual simulation in PRISM. Whilst the model has been shown to possess the required and expected properties, it is beneficial to the reader to see how PRISM treats execution of the models in terms of executions of actions and the updating of values. Therefore, an example manual simulation has been featured below.
 
 \begin{figure}[ht!]
 \centering
@@ -325,7 +458,12 @@ The justification for checking this property is less trivial; although a protoco
 As shown in figure \ref{dtmcEx}, the behaviour of the model is as predicted. Commitments, referred to in the model as $Bits$, are sent back and fourth each round until completion. Upon receiving it's final, $N+1$th commitment, party $O$ goes into a loop with it's $turn$ variable being set to 2; this is to represent the end of the protocol. 
 At no stage during the interaction is there a choice; the model limits actions in such a way as at any time, there is only one possible action. This is enforced here by the specific logic used in the guards in the model.
 
-As mentioned above, the model does not allow for the full range of interaction possible in a protocol such as this. The DTMC properties mean that there cannot be multiple actions possible at a given point, without providing probabilities of what may or may not happen. This is unsuitable as interaction of party cannot be thought of in terms of probability of actions; it is a non-deterministic choice. (is it though??) 
+\subsection{Limitations of the DTMC}
+
+As mentioned previously, the model does not allow for the full range of interaction possible in a protocol such as this. Having the model be a DTMC means that there cannot be multiple actions possible at a given point, without providing probabilities of what may or may not happen. This is unsuitable as interaction of party cannot be thought of in terms of probability of actions; the parties make choices that are non-deterministic, such as the choice of a corrupt party to either send a commitment or not send a commitment. These are real world choices meaning there isn't information that can be used to guess what is going to happen. 
+
+Despite being limited in terms of how much of the protocol can be modelled, the model is in itself a success. It is an important step to modelling the complete model, and successfully represents the Gradual Commitment Property. The construction of the model also served to help familiarity with the PRISM model checker increase.
+
 \chapter{MDPs and the Second Model}
 
 \section{Rationale}
@@ -338,61 +476,71 @@ MDPs are required to implement a model that allows each party multiple choices p
 
 \subsection{Introduction of Interaction}
 
-To accommodate this type of choice within an MDP model, it is necessary to add more commands to each of the modules. The additions to each model are similar, and the additions made to partyO are shown below. Note how the guards in the [reqX] and [ignoreX] commands have conditions where they can both be fulfilled, as can [sendX]. This is what gives the model it's non-deterministic property and allows the MDP to take place.
-
+To accommodate the expanded possibilities possible in an MDP model, it is necessary to add more commands to each of the modules to achieve a model that more closely represents the protocol. The additions to each model are similar, and the additions made to party $O$ are shown below. Note how the guards in the [reqX] and [ignoreX] commands have conditions where they can both be fulfilled, as can [sendX]. This is what gives the model it's non-deterministic property and allows the MDP to take place.
 \begin{lstlisting}
+    contactO : [0..1]; //1 represents contacted TTP
+    resultO : [0..2]; //1 represents resolved contract by TTP, 2 represents rejection
+	
     //can contact TTP provided it hasn't done so
-    [reqO] turnO=1 & !(contactO=1) & recdBitsO<=N & recdBitsO>=1 -> (contactO'=1);
+    [reqO] turnO=1 & !(contactO=1) & recdBitsO<=N & recdBitsO>=0 -> (contactO'=1);
     [replyO] sendO=1 ->(resultO'=responseO) & (turnO'=0);
     [replyR] turnO=0 -> (turnO'=1);
-    //doesnt send a commitment; provided its not TTPing
     [ignoreO] turnO=1 & !(contactO=1 & resultO=0) -> (turnO'=0);
 	[ignoreR] turnO=0 -> (turnO'=1);
 \end{lstlisting}
 
-There is an added guard to the [reqX] command. As the TTP is designed to ignore requests from parties who have already contacted it, a problem presented itself in the from of mapping out this behaviour. It was decided that as there is no difference in terms of states between a party being ignored by the TTP and that party not contacting the TTP; the outcome is identical. It was also decided that in practical turns, any party participating in the protocol would be familiar in the rules of the protocol, and therefore would be unlikely to make a second request regardless.\\
+The action $reqO$ represents the party making a resolution request and ocntacting the TTP. Here, teh number of received commitments has to be greater than or equal to zero; in the party $R$ equivalent, this number is set to 1. The reason for this is the Originator has the capability to create a zero commitment resolution request, unlike the responder. With the exception of this change, the Responder version of these additions are identical. After the TTP has been contacted, the action $replyO$ will be executed, updating the variable $resultO$, which is used to store the results of a resolution request. The command $ignoreR$ is used to end a party's turn without requiring it to send a commitment.
+
+The commands $replyR$ and $ignoreR$ are used solely to update the turn variable when the other party has taken their turn. This is required as it is not possible for a module to update a variable stored within another module. It is however possible for one module to use the values stored in a variable in another module for logical purposes.
+
+There is added logic to the [reqX] command not present in the description of the protocol. As the TTP is designed to ignore requests from parties who have already contacted it, a problem presented itself in the from of mapping out this behaviour. It was decided that as there is no difference in terms of states between a party being ignored by the TTP and that party not contacting the TTP; the outcome is identical. It was also decided that in practical turns, any party participating in the protocol would be familiar in the rules of the protocol, and therefore would be unlikely to make a second request regardless.\\
+
 
 \subsection{Implementation of the TTP}
 
 The TTP also now requires modelling in a PRISM model. The implementation of this, below, is almost a direct translation of the rules stated earlier in the paper, and found in CITEHERE. The only slight addition is the inclusion of a reply command; this is purely for reasons of simplicity. Whilst it is possible to implement an action that modelled the contacting of the TTP in a single move, the solution would be complicated and a likely source of error. Therefore, a reply command has been added, and whilst this requires two moves in the PRISM simulator, the outcome matches what is required here. Having this broken into two stages also helps enforce the impression the TTP is a complete separate party all on its own; in a practical application, there will be concerns of data transport, and having the reply as a separate action helps better emulate this interaction.
 \begin{lstlisting}
 module tTP
-    responseO : [0..2]; //1 for resolved, 2 for rejected
-    iO : [0..N+1]; //stores number of commitments for party's first contact
-    sendO : [0..1]; //trigger for sending back result
+  responseO : [0..2]; //1 for resolved, 2 for rejected
+  iO : [0..N+1]; //stores number of commitments for party's first contact
+  sendO : [0..1]; //trigger for sending back result
 
         
-    //if no one has contacted, follow logic for rule 1
-    [reqO] (sendO=0 & sendR=0) & responseO=0 & responseR=0 & recdBitsO<=N -> 
-        recdBitsO/N : (responseO'=1) & (iO'=recdBitsO) & (sendO'=1)  + 
-            (N-recdBitsO)/N : (responseO'=2) &ryrtyrtyr (iO'=recdBitsO) & (sendO'=1) ;
+  //1) if no one has contacted, follow logic for rule 1
+  [reqO] (sendO=0 & sendR=0) & responseO=0 & responseR=0 & recdBitsO<=N 
+    -> recdBitsO/N : (responseO'=1) & (iO'=recdBitsO) & (sendO'=1)  
+      + (N-recdBitsO)/N : (responseO'=2) &ryrtyrtyr (iO'=recdBitsO) & (sendO'=1) ;
 
-    //if the party has contacted previously, ignore following rule 2
-    [reqO] (sendO=0 & sendR=0) & responseO>0 -> true ;
+  //2) if the party has contacted previously, ignore following rule 2
+  [reqO] (sendO=0 & sendR=0) & responseO>0 -> true ;
     
-    //if other party contaced and was resolved, resolve request as rule 3a
-    [reqO] (sendO=0 & sendR=0) & responseO=0 & responseR=1 -> 
-        (responseO'=1) & (sendO'=1) ;
+  //3a) if other party contaced and was resolved, resolve request as rule 3a
+  [reqO] (sendO=0 & sendR=0) & responseO=0 & responseR=1 
+     -> (responseO'=1) & (sendO'=1) ;
 
-	//if other party contacted and was rejected and other party had fewer commitment, follow rule 3b
-    [reqO] (sendO=0 & sendR=0) & responseO=0 & responseR=2 & iR<recdBitsO & recdBitsO<=N -> 
-        recdBitsO/N : (responseO'=1) & (sendO'=1) + (N-recdBitsO)/N : (responseO'=2) & (sendO'=1) ;
+  //3b) if other party contacted and was rejected and other party had fewer commitment
+  [reqO] (sendO=0 & sendR=0) & responseO=0 & responseR=2 & iR<recdBitsO & recdBitsO<=N 
+    -> recdBitsO/N : (responseO'=1) & (sendO'=1) 
+      + (N-recdBitsO)/N : (responseO'=2) & (sendO'=1) ;
 
-    //if other party contacted, was rejected and had more commitments, reject following rule 3c
-	[reqO] (sendO=0 & sendR=0) & responseO=0 & responseR=2 & iR>=recdBitsO -> (responseO'=2) & (sendO'=1) ;
+  //3c) if other party contacted, was rejected and had more commitments, reject
+  [reqO] (sendO=0 & sendR=0) & responseO=0 & responseR=2 & iR>=recdBitsO 
+    -> (responseO'=2) & (sendO'=1) ;
 
-    [replyO] sendO=1 -> (sendO'=0) ;
+  //used to send the result after the descision has been made
+  [replyO] sendO=1 -> (sendO'=0) ;
 
 endmodule
 
 \end{lstlisting}
 
 As stated, the actions in the code above correspond to the rules obeyed by the TTP as described in the paper. Taking the request command for rule number 3a, this can be shown.
+
 \begin{lstlisting}
-[reqO] (sendO=0 & sendR=0) & responseO=0 & responseR=1 -> 
-        (responseO'=1) & (sendO'=1) ;
+  [reqO] (sendO=0 & sendR=0) & responseO=0 & responseR=1 
+    -> (responseO'=1) & (sendO'=1) ;
 \end{lstlisting}
-The label $[reqO]$ forces PRISM to consider this particular command whenever $[reqO]$ is invoked by any module, in this case being the party O. The guard here fulfills the logic required as follows:
+The label $[reqO]$ forces PRISM to consider this particular command whenever $[reqO]$ is invoked by any module, in this case being the party O. The guard here fulfils the logic required as follows:
 \begin{itemize}
 \item (sendO=0 \& sendR=0) ensures that the TTP is not currently processing a request from either party. Were this to be the case, one of thee variables would have been set ot 1, to indicate the reuqest being made from that party.
 \item responseO=0 provides a guarantee that this party, O, has not contacted the TTP before. If this were not the case, an instance of [reqO] corresponding to the third set of TTP rules should be invoked.
@@ -414,7 +562,7 @@ Due to the expansion, it is now possible to choose an action to follow from a li
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=100mm]{images/mdpPExample.png}
+\includegraphics[width=160mm]{images/mdpPExample.png}
 \caption{The results of manual simulation of an MDP in the PRSIM engine}
 \label{mdpPEx}
 \end{figure}
@@ -530,7 +678,7 @@ The difference between the SMG model and the MDP model are subtle in comparison 
 \label{smgEx}
 \end{figure}
 
-Figure \ref{smgEx} shows execution of the SMG model that is comparable to MDP model in \ref{mdpEx}. These models represent the protocol with a corrupt party $R$ and honest party $O$. Note the stark similarities between the chain of execution here and with the MDP equivalent; the only difference is here the party that has executed that command is taken note of. The power of the SMG is not in what the models themselves can do, but how different properties can be assessed, as discuessed later in this chapter.
+Figure \ref{smgEx} shows execution of the SMG model that is comparable to MDP model in \ref{mdpPEx}. These models represent the protocol with a corrupt party $R$ and honest party $O$. Note the stark similarities between the chain of execution here and with the MDP equivalent; the only difference is here the party that has executed that command is taken note of. The power of the SMG is not in what the models themselves can do, but how different properties can be assessed, as discussed later in this chapter.
 
 
 \section{Anaysis}
