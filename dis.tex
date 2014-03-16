@@ -46,22 +46,29 @@ The aim of this project is to model and analyse a certain CSP, using PRISM. Afte
 
 \chapter{Introduction}
 \pagenumbering{arabic}
-With the rise of connected technologies and networks, there has also been a rise in the number of transactions that now take place digitally. These can involve multiple parties exchanging information they require from one another, however how can these parties trust each other to be honest in the exchange? Many potential solutions have been put forwards, but due to the nature and style of interaction between parties, it can be difficult to map and assess how effective these solutions are. One class of protocols are contract-signing protocols (CSPs), designed to ensure fairness for all parties involved.
-CSPs focus on users sending a “contract” to each other; that is, information which needs to be sent in its entirety to bear any use to the party. The idea is that all parties share their information fairly with one another, and each party knows what to expect. There are different approaches to this, and many protocols such as Rabins and BGMR have been put forward and can be used as solutions. But what is fairness? Here, fairness is treated as a boolean condition; a transaction is considered unfair if any parties can achieve their goal of gaining another parties offer whilst guaranteeing that other parties cannot achieve their goal. To ascertain what state the different parties are in, it would be beneficial to use a protocol which can be defined as a non-repudiation protocol.
-Non-repudiation is the concept that parties who are participating in an exchange cannot deny their taking part; that is to say, the parties cannot lie about what they have done. This brings with it the concept of a trusted-third party (TTP), an impartial party capable of ensuring fairness in the protocol. Parties can interact with the TTP in one of two ways; one option is that all transactions between the parties can involve the TTP directly, and these protocols are known as non-optimistic. The other, arguably more preferable solution, is to have the parties only contact the TTP as and when it is needed; these types of protocol are known as optimistic. This type of interaction with the TTP has many benefits, which will be discussed in another section.
+With the rise of connected technologies and networks, there has also been a rise in the number of transactions that now take place digitally. These can involve multiple parties exchanging information they require from one another, however how can these parties trust each other to be honest in the exchange? Many potential solutions have been put forwards, but due to the nature and style of interaction between parties, it can be difficult to map and assess how effective these solutions are. One class of protocols are contract-signing protocols (CSPs), designed to ensure fairness for all parties involved.\\
+Consider an exchange of goods over the Internet. Commercial sales are made on-line regularly, but neither party wants to be the only one to commit. The buyer doesn't want to promise to pay until the seller promises to send them the desired goods, and vice versa. Neither party wants to commit first; one solution is to use a contract signing protocol.
 
-When attempting to model real world interaction, there is one field which can be both difficult to model and is required to be implemented to keep the model representative of the interactions that can take place, and that is non-determinism. To successfully model a system that models a CSP fully, a tool must be selected that can handle the mathematical aspects of the protocol, such as non-determinism and probability. For this project, PRISM has been selected as the implementation tool, with a section later in the paper with the reasoning and a brief explanation of how PRISM handles models.
+CSPs focus on users sending a “contract” to each other; that is, information which needs to be sent in its entirety to bear any use to the party. The idea is that all parties share their information fairly with one another, and each party knows what to expect. There are different approaches to this, and many protocols such as Rabin's, \cite{rabin1983transaction}, and Ben-Or Goldreich Micalu and Rivest's (BGMR) protol, \cite{ben1990fair}, have been put forward and can be used as solutions. But what is fairness? Here, fairness is treated as a boolean condition; a transaction is considered unfair if any parties can achieve their goal of gaining another parties offer whilst guaranteeing that other parties cannot achieve their goal. 
+non-repudiation is another key concept with CSPs.
+Non-repudiation, introduced in CITE, is the concept that parties who are participating in an exchange cannot deny their taking part; that is to say, the parties cannot lie about what they have done. This brings with it the concept of a trusted-third party (TTP), an impartial party capable of ensuring fairness in the protocol. Parties can interact with the TTP in one of two ways; one option is that all transactions between the parties can involve the TTP directly, and these protocols are known as non-optimistic. The other, arguably more preferable solution, is to have the parties only contact the TTP as and when it is needed; these types of protocol are known as optimistic. This type of interaction with the TTP has many benefits, which will be discussed in chapter 3.
+
+There is a need to verify the correctness of these theoretical protocols; many of them are simply too complex to exhaustively simulate, and mathematical proofs cannot always account for all types of interactions. It is here that probabilistic model checking proves useful; being able to create a model to represent the behaviour of such protocols would allow certain checks and properties to be assessed, without the need for exhaustive manual simulation or laborious mathematical proofs.
+
+When attempting to model real world interaction, there is one field which can be both difficult to model and is required to be implemented to keep the model representative of the interactions that can take place, and that is non-determinism. To successfully model a system that models a CSP fully, a tool must be selected that can handle the mathematical aspects of the protocol, such as non-determinism and probability. For this project, PRISM has been selected as the implementation tool, with a section later in the paper with the reasoning and a brief explanation of how PRISM handles the different types of models used in the remainder of the paper.
 
 
 The following sections make up the rest of the report:
+\begin{description}
+\item[Chapter 2] looks at the necessary background understanding for the project; Discrete Time Markov Chains, Markov Decision Processes and Stochastic Multi-player Games are all discussed and their use is rationalised. This chapter also examines probabilistic model checking, as well as explaining the tool of choice for this project, the PRISM model checker.
 
-Chapter 2 looks at the necessary background understaning for the project; DTMCs, MDPs and SMGs are all discussed and their use is rationalised. This chapter also examines probabilistic model checking, as well as explaining the tool of choice for this project, the PRISM model checker.
+\item[Chapter 3] examines the protocol itself, focusing on elements such as corruptness, honesty and the key property. Other contract signing protocols are also briefly described, introducing such concepts as non-repudiation and optimistic contract signing protocols.
 
-Chapter 3 examines the protocol itself, focusing on elements such as corruptness, honesty and the key property. Other contract signing protocols are also briefly described, introducing such concepts as non-repudiation and optimisimtic contract signing protocols.
+\item[Chapters 4 to 6] focus on the construction of the models and in turn their analysis. Each chapter looks at a different style of modelling, and features the results from the analysis as well as justification for any model development.
 
-Chapters 4 to 6 focus on the construction of the models and in turn their analysis. Each chapter looks at a different style of modelling, and features the results from the analysis as well as justification for any model development.
+\item[Chapter 7] is the conclusion of the project, summarising findings, limitations of the projects and potential future areas of work concerning this specific protocol.
+\end{description}
 
-Chapter 7 is the conclusion of the project, summarising findings, limitations of the projects and potential future areas of work concerning this specific protocol.
 
 \chapter{Background}
 This section discusses and lays out the protocol described by Aizatulin, Schnoor and Wilke, found in \cite{ASW09}. There will also be a section detailing other types of CSPs that have been looked at. It then goes on to explain DTMCs, probabilistic model checking, and the tool of choice for building the model, PRISM.
@@ -71,7 +78,7 @@ Discrete-time markov chains [DTMCs] are often used as a way to model probabilist
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=100mm]{images/DTMCExample.png}
+\includegraphics[width=120mm]{images/DTMCExample.png}
 \caption{An example of a DTMC showing a coin toss}
 \label{dtmc}
 \end{figure}
@@ -105,19 +112,14 @@ Markov Decision Processes [MDPs] are similar to DTMCs. They both feature states 
 \label{mdp}
 \end{figure}
 
-The diagram at figure \ref{mdp} shows an extended version of the coin flipping example expressed as a DTMC model in figure \ref{dtmc}. Here, there are two coins that can be flipped, each with the same probability of landing a ``heads'' or a ``tails'' result. The difference here is that there is a choice between which coin is going to be flipped, the selections being noted by $a$ and $b$ on the diagram. As the choice is non-deterministic, there is nothing to indicate which coin will be selected, they are picked at random. This is the value that expanding to an MDP model brings, the seemingly random choosing between multiple options.
+The diagram at figure \ref{mdp} shows an extended version of the coin flipping example expressed as a DTMC model in figure \ref{dtmc}. Here, there are two coins that can be flipped; one a standard coin with the usual probabilities, and one a ``biased'' coin that has a higher probability of achieving a ``Head'' result than a ``Tails'' one. The other difference here is that there is a choice between which coin is going to be flipped, the selections being noted by $a$ and $b$ on the diagram. As the choice is non-deterministic, there is nothing to indicate which coin will be selected, they are picked at random. This interaction reflects a real world choice; the choice between two coins on a table is largely non-deterministic. For this to be fully the case, the biased coin would have to give the appearance of a normal coin. This is the value that expanding to an MDP model brings, the seemingly random choosing between multiple options.\\ 
+The transitions leaving the $S_0$ do not have sum to an overall probability of 1; this represents the differences between an MDP and DTMC quote well. There is nothing to suggest which path will be selected, choice $a$ has no impact on choice $b$. The transitions leaving the biased coin state, $S_2$, do sum up to 1 as one of these paths will be selected, however the probabilities of $0.8$ and $0.2$ are used due to the coin being biased towards a ``Heads'' result.
 
-Again, MDPs can can be represented in a similar fashion as DTMCs as a set of labels, possible states, starting state and a transtition matrix. The majority of these are equivalent to the versions expressed for a DTMC, however the transition probability matric has a notable difference. Below is the transition probability matrix for the MDP in figure \ref{mdp}.\\
 
-\centerline{$P :\begin{bmatrix}
-0 & a & b & 0 & 0\\ 
-0 & 0 & 0 & 0.5 & 0.5\\ 
-0 & 0 & 0 & 0.5 & 0.5\\ 
-1 & 0 & 0 & 0 & 0\\ 
-1 & 0 & 0 & 0 & 0
-\end{bmatrix}$}
+%Again, MDPs can can be represented in a similar fashion as DTMCs as a set of labels, possible states, starting state and a transtition matrix. The majority of these are equivalent to the versions expressed for a DTMC, however the transition probability matric has a notable difference. Below is the transition probability matrix for the MDP in figure \ref{mdp}.\\
 
-Note here how the property of state transitions horizontally equalling one is no longer applicable. The first row of the matrix sums to equal $a+b$; this is due to the introduction of real choice. It i s a non-deterministic decision that determines the transition from the first state, rather than probability being the deciding factor.
+
+%Note here how the property of state transitions horizontally equalling one is no longer applicable. The first row of the matrix sums to equal $a+b$; this is due to the introduction of real choice. It i s a non-deterministic decision that determines the transition from the first state, rather than probability being the deciding factor.
 
 
 \section{SMGs}
@@ -125,9 +127,9 @@ Note here how the property of state transitions horizontally equalling one is no
 
 Stochastic multiplayer games, [SMGs], are an extension to MDPs. Rather than having just a series of states a model can move into, it allows the modelling of a turn based style interaction to reflect reflective or competitive interaction. This is beneficial as it allows a more realistic interaction than an MDP; players can be more effectively given aims and act in specific ways to try and reach certain outcomes. 
 
-The difference between an SMG and an MDP is the way way each traversal option in a game has to be associated to a player. Moves can be non-deterministic or probabilistic, as in MDPs, but transition is "performed" by one participant. The culmination of these transitions can be used to evaluate a strategy; with the move-set of a party defined, it is possible to determine what actions each party would need to take to reach a specific outcome. The coin example being used so far isn't ideal for displaying this, as there is no competitive aspect to it; however it could still be modelled as an SMG.
+The difference between an SMG and an MDP is the way way each traversal option in a game has to be associated to a player. Moves can be non-deterministic or probabilistic, as in MDPs, but a transition is "performed" by one participant. The culmination of these transitions can be used to evaluate a strategy; with the move-set of a party defined, it is possible to determine what actions each party would need to take to reach a specific outcome. The coin example being used so far isn't ideal for displaying this, as there is no competitive aspect to it; however it could still be modelled as an SMG.
 
-It would be possible to have two parties, a ``picker'' and a ``flipper''. The picker would select which coin was flipped, and the flipper would then flip the coin to get the result. To model this as an SMG, the ``picker'' would be assigned the transitions from ``pick'' to the possible outcomes of that decision, namely S$_1$ and S$_2$. This would mean that the picking action is attributed to the ``picker'' party. The ``flipper'' is assigned moves that represent the flipping on the coin, namely the transitions from coins $a$ and $b$ to the possible outcomes, $Heads$ and $Tails$. A strategy could then be formed to show how the state of $Heads$ could be reached. That strategy could be represented in a table style form, as shown in table \ref{smgTable}.
+It would be possible to have two parties, a ``resetter'' and a ``flipper''. The ``flipper'' has the ability to select he coin to be flipped, and the flip it to get a result. It is then the role of the ``resetter'' to decide as to wether the outcome is final, or the situation is to be reset, causing the flipper to have to start again. To model this as an SMG model, the ``fliper'' would be assigned the transitions from ``pick'' to the possible outcomes of that decision, namely S$_1$ and S$_2$, and also the transitions that ``flip'' between the coin states $S_1$ and $S_2$ and the results states of $S_3$ and $S_4$. The ``resetter'' would be assigned the transitions between the results states and the initial state, $S_0$. This would mean that the picking action is attributed to the ``flipper'' party, as well as them being assigned moves that represent the flipping on the coin. The resetting action is attributed to the ``resetter'' party.  A strategy could then be formed to show how the state of $Heads$ could be reached. That strategy could be represented in a table style form, as shown in table \ref{smgTable}. 
 
 \begin{table}[]
 \centering
@@ -135,24 +137,25 @@ It would be possible to have two parties, a ``picker'' and a ``flipper''. The pi
   \hline                       
   Party & Action & Outcome \\
   \hline
-  picker & Select coin & a  \\
+  flipper & Select coin & coin a  \\
   flipper & Flip coin (a) & Tails \\
-  picker & Select coin & b \\
-  flipper & Flip coin (b) & Heads \\
+  resetter & Reset & -  \\
+  flipper & Select coin & coin b  \\
+  flipper & Flip coin (a) & Heads \\
   \hline  
 \end{tabular}
 \caption{A table showing how SMGs link transitions to parties}
 \label{smgTable}
 \end{table}
 
-The table shows what would happen if the first flipping of a coin yielded $Tails$ instead of heads the first time. The picker non-deterministically selects coin $a$. The flipper then flips the coin, and has a result of $Tails$, with 0.5 being the probability of that result. The picker then picks again non-determinstically, this time opting for coin $b$. Note that this choice has not been impacted by the previous result; the choice form the picker is always random, with no factors that contribute to the overall decision. The flipper then flips the coin, yielding the desired $Heads$ result.
+The table shows what would happen if the first flipping of a coin yielded $Tails$ instead of heads the first time. The flipper initially non-deterministically selects coin $a$. The flipper then flips the coin, and has a result of $Tails$, with 0.5 being the probability of that result. The picker then picks again non-deterministically, this time opting for the biased coin $b$. Note that this choice has not been impacted by the previous result; the choice form the picker is always random, with no factors that contribute to the overall decision. The flipper then flips the coin, yielding the desired $Heads$ result, with a 0.8 probability of this being he result from that coin.
 
 
 
 \section{Probabilistic Model Checking}
 
 
-Probabilistic model checking [PMC] allows a model the be analysed, giving probabilities of outcomes based on the information provided in the model itself. This method of analysis lends itself well to the verification of real world systems, and has many applications such as the analysis of failure probabilities to the application here, the probabilities of different outcomes in a contract signing protocol. There are many types of models that are covered by probabilistic model checking, and three that are important to this project; Discrete Time Markov Chains, Markov Decision Processes, and Stochastic Game Models. Each of these have been discussed above, and here we will look at how exactly they translate.
+Probabilistic model checking [PMC] allows a model the be analysed, giving probabilities of outcomes based on the information provided in the model itself. This method of analysis lends itself well to the verification of real world systems, and has many applications such as the analysis of failure probabilities to the application here, the probabilities of different outcomes in a contract signing protocol. There are many types of models that are covered by probabilistic model checking, and three that are important to this project; Discrete Time Markov Chains, Markov Decision Processes, and Stochastic Game Models. Each of these have been discussed above, and here we will look at how they translate to PRISM models.
 
  Model checking is advantageous to simply relying on frequent manual simulation, for two main reasons. Firstly, the size and complexity of these systems mean relying on manual testing would both be lengthy and likely erroneous. The second reason manual testing the system is the unpredictability of a system based on non-determinism; there are case where planning every set of possible outcomes and choices would be near impossible, it is far more preferable to have PRISM check all possible states and transition options.
 
@@ -166,13 +169,14 @@ The models themselves are built up using modules and variables. Variables here b
     [label] guard -> probability1 : (update1) + ... + probabilityN : (updateN);
 \end{lstlisting}
 
-The label is simply the name of the command, and is used for identification and synchronisation purposes. The guard takes the form of conditions that must be met in order for the command to be executable. The probabilities can either be expressed as a decimal number, or as a equation involving variables in the model. The probabilities must be positive, and cannot sum up to more than one for any single command; in the event of an equation being used for the probabilities, this may require enforcing through the use of conditions in the guard. The updates, denoted by a variable name followed by an inverted comma, change the desired variables to new values; again, these can be expressed as numbers or equations featuring variables. The updates must be contained in a set of brackets.
+The label is simply the name of the command, and is used for identification and synchronisation purposes. The guard takes the form of conditions that must be met in order for the command to be executable. Where different modules feature commands with the same label, the conditions in all modules with that command label must be met for the commands to run, and the updates will happen together. If the case arises where there is a module with multiple commands with the same label, the conditions will decide which one is executed; if multiple commands feature both the same label and conditions that are met, PRISM will select one option to execute non-deterministically. This allows implementation of triggers across modules; if one module is required to update a variable based on the action in another module, it is possible to use the same name for actions in both modules and have the updates occur simultaneously.\\
+The probabilities featured in the updates can either be expressed as a decimal number, or as a equation involving variables in the model. The probabilities must be positive, and cannot sum up to more than one for any single command; in the event of an equation being used for the probabilities, this may require enforcing through the use of conditions in the guard. The updates, denoted by a variable name followed by an prime, change the desired variables to new values; again, these can be expressed as numbers or equations featuring variables. The updates must be contained in a set of brackets.
 
 Declaring variables constant externally to any modules allow user input at run time. As the model is analysed, PRISM will ask users to enter a value for this constant; this allows users to check validity whilst changing certain dependant variables for a specific run.
 
 Logic is applied directly in PRISM; $ \& $ for AND logic, $ \mid $ for OR logic, ! for NOT and = for equals. This logic can be applied in full in the guard, however ampersands are used to change multiple variables per update. (fix later)
 
-Where different modules feature commands with the same label, the conditions in all modules with that command label must be met for the commands to run, and the updates will happen together. If the case arises where there is a module with multiple commands with the same label, the conditions will decide which one is executed; if multiple commands feature both the same label and conditions that are met, PRISM will select one option to execute non-deterministically. 
+
 %This allows implementation of triggers across modules; for instance in one of the models featured in this project, when party "O" sends a commitment using command [sendO], the other party "R" features the command [sendO] with the condition "true". This leads to R being able to update a variable every time [sendO] is invoked.
 
 \subsection{Example PRISM Models}
@@ -229,17 +233,19 @@ module coin
 
   [pick] flipped=0 & coin=0 & result=0 -> (coin'=1);
   [pick] flipped=0 & coin=0 & result=0 -> (coin'=2);
-  [flip] flipped=0 & coin=1 & result=0 -> 0.5 : (result'=1) & (flipped'=1) + 0.5 : (result'=2) & (flipped'=1);
-  [flip] flipped=0 & coin=2 & result=0 -> 0.8 : (result'=1) & (flipped'=1) + 0.2 : (result'=2) & (flipped'=1);
+  [flip] flipped=0 & coin=1 & result=0 
+    -> 0.5 : (result'=1) & (flipped'=1) + 0.5 : (result'=2) & (flipped'=1);
+  [flip] flipped=0 & coin=2 & result=0 
+    -> 0.8 : (result'=1) & (flipped'=1) + 0.2 : (result'=2) & (flipped'=1);
   [reset] result!=0 & flipped=1 -> (result'=0) & (flipped'=0) & (coin'=0);
 	
 endmodule
 \end{verbatim}
 
-There is only one new variable this time, {\tt coin}. This variable stores the con that has been picked, 0 being no selection as of yet, 1 is the normal coin, and 2 is the biased coin. There is also a new command, {\tt pick} that represents the transitions from the starting state to the coin states.
+There is only one additional variable used here that is not present in the MDP model, {\tt coin}. This variable stores which coin that has been picked, 0 being no selection as of yet, 1 is the normal coin, and 2 is the biased coin. There is also a new command, {\tt pick} that represents the transitions from the starting state to the coin states.
 
 Note here how there are two instances of both the {\tt pick} and {\tt flip} command. This is for different reasons. The {\tt pick} commands are selected by the model checker non-deterministically; there is no difference in the logic contained in the command guards, so either can be selected and both are always possible to select at the same time. The only difference is the outcome of that command, to be chosen at random.\\
-The two {\tt flip} commands are featured for a different reason however. Whereas before there where two commands required for the random style selection, there are now two commands based on the input to that command. There is now a difference in the guards; one command is design for use with the normal coin, one for use with the biased coin. As such, the two commands also feature different update values.
+The two {\tt flip} commands are featured for a different reason however. Whereas before there where two commands required for the random style selection, there are now two commands based on the input to that command. There is now a difference in the guards; one command is design for use with the normal coin, one for use with the biased coin. As such, the two commands also feature different update values reflecting the two sets of of probabilities.
 
 
 \subsection{Formulae in PRISM}
@@ -247,24 +253,47 @@ The two {\tt flip} commands are featured for a different reason however. Whereas
 Due to the nature of probabilistic model checking, it is necessary for PRISM to be able to accommodate certain types of key operators and notations used in the field. These primarily come into use with the properties being assessed, rather than the model. Key things are:
 \begin{itemize}
 \item $F$ means that the condition that follows it will be fulfilled at some stage in the future. There is no guarantee of length or when that will be, just the knowledge that a given condition will or wont be fulfilled. In mathematical notation, this is often referred to as $\diamondsuit$.
-\item $G$ represents that there will be a future state that fulfils the condition, which then is fulfilled in that manner eternally. Again, there is no promise as to when this state will or wont happen. it's the same as $F$, if the condition stays true forever if met. In mathematical notation, this is often referred to as $\Box$.
+\item $G$ represents that all future states will fulfil the condition. In mathematical notation, this is often referred to as $\Box$.
+\item $P$ provides the user with the probability of a certain condition being fulfilled under any sequence of possible moves. This condition can incorporate both the $F$ and $G$ operators. .
 \item $P{_{max}}$=$?$ provides the user with the maximum probability of a certain condition being fulfilled. This condition can incorporate both the $F$ and $G$ operators. 
 \end{itemize}
 
 \subsection{Properties in PRISM}
 
-To allow efficient analysis of the models in PRISM, it is possible to create properties in pACTL and have the system execute the model against the property and look at all the possibilities.
+Properties in PRISM are expressed in PCTL. They use a combination of the previously mentioned formulae and conditions that relate to the states of variables within the models.
 
 
 \subsection{Prism for Games}
 There is an extension to PRISM which includes support for SMG style models, PRISM for Games {FINDCITE}.
 There is one key difference to how SMGs are portrayed in PRISM compared to MDPs. As well as modules, players themselves must be defined, and given a list of actions they can take on their turn. This allows the model checker to associate certain transitions with certain parties, allowing strategies to be built.
 \subsubsection{Games Properties}
-The properties in PRISM for Games work in an identical way to the properties used for the other types of models; however it is now possible to create a strategy to achieve a goal laid out in a property. It also possible to force the model checker to act in such a way that only certain parties participate in the creation of such a strategy; this type of behaviour is particularly beneficial if one wants to determine how a particular party can force a particular outcome.
+The properties in PRISM for Games work in an identical way to the properties used for the other types of models; however it is now possible to create a strategy to achieve a goal laid out in a property. It also possible to force the model checker to act in such a way that only certain parties participate in the creation of such a strategy; this type of behaviour is particularly beneficial if one wants to determine how a particular party can force a particular outcome. Game properties feature an expression that other PRISM models do not; the ${\tt \ll \gg}$ operator. This is expressed before each condition, however each property can feature more than one condition. An identifier for one or more players is entered between these brackets, and then only strategies these parties can employ to fulfil the condition are considered.
+\subsection{Example Game Models}
+
+Here, the SMG style properties can be added to the existing code. The changes required are as follows:
+
+\begin{verbatim}
+smg 
+
+player flipper
+  [pick], [flip]
+endplayer
+
+player resetter
+  [reset]
+endplayer
+\end{verbatim}
+
+This code would need to be put at the top of the file, {\tt smg} replacing the current {\tt mdp} declaration. The two {\tt player} declarations divide up the available actions into appropriate groups, the groups being discussed earlier during the section on SMGs. The {\tt flipper} takes on the actions  that would ``pick'' and ``flip'' the coin, and the {\tt resetter} would then be the party responsible for the ``reset'' of the coin. It would now be possible to define a property to find a strategy of obtaining a ``Heads'' result; this strategy could be the creation of either party, or potentially both. It would include all actions required by that party required to achieve the outcome required by the property. To continue with the coin example as shown previously, the following property finds the maximum probability of achieving a ``Heads'' result.
+
+\centerline{$\ll1\gg$ Pmax=? [F result=1]}
+
+Running this in PRISM, forces PRISM to consider the move set of the {\tt flipper}, and defines a strategy that they can employ to satisfy the condition.
+
 
 
 \chapter{The Protocol}
-The basis for this project is the contract signing protocol detailed by Aizatulin, Schnoor and Wilke in \cite{ASW09}. The protocol takes a "gradual commitment" approach, and the steps of the protocol are laid out below. There are two parties here; party $O$, the originator, and party $R$, the responder. The originator is the party which initiates the protocol, by sending the first commitment. The responder is the party that the originator wishes to make an exchange with
+The basis for this project is the contract signing protocol detailed by Aizatulin, Schnoor and Wilke in \cite{ASW09}. The protocol takes a "gradual commitment" approach, and the steps of the protocol are laid out below. There are two parties here; party $O$, the originator, and party $R$, the responder. The originator is the party which initiates the protocol, by sending the first commitment. The responder is the party that the originator wishes to make an exchange with. The protocol also features a Trusted Third Party, the TTP, which acts as an impartial judge in cases.
 
 
 \begin{figure}[ht!]
@@ -274,30 +303,35 @@ The basis for this project is the contract signing protocol detailed by Aizatuli
 \label{csp}
 \end{figure}
 
-This is referred to in the paper as the Gradual Commitment Protocol [GCP]; parties send commitments to each other in turn. These commitments eventually become valid contracts; when they are the $N+1$th contract that party has received, that party then has the contract. The commitments take the form of\\
+This is referred to in the paper as the Gradual Commitment Protocol [GCP]; parties send commitments to each other in turn. These commitments eventually become valid contracts; the party is considered to have the contract when they have received all commitments, totalling $N+1$. The commitments take the form of\\
 
 \centerline{CMT${_{X}^{i}}$=$[text, O, R, T, i]_X $ .}
 
-Here, $text$ is the contract, the document both parties are attempting to sign. $O$ and $R$ represent and identify the parties participating in the protocol, the originator and responder, and $T$ represents and identifies the Trusted Third Party. The character $i$ represents the number of commitments thus far, and ideally is therefore indicative of the number of exchanged that have taken place at that point. The symbols $[...]_X$ represent a signed message, $_X$ being the signature.
+Here, $text$ is the contract, the document both parties are attempting to sign. $O$ and $R$ represent and identify the parties participating in the protocol, the originator and responder, and $T$ represents and identifies the Trusted Third Party. The character $i$ represents the number of commitments thus far, and ideally is therefore indicative of the number of exchanged that have taken place at that point. The symbols $[...]_X$ represent a signed message, $_X$ being the signature of party $X \left ( \in \left \{ O,R \right \} \right )$;
 %The number of commitments for each party is $n+1$, this being the number of commitments that are needed to make the entirety of the contract. This leads to one of the key principles of the protocol, and that is that this protocol gives the low balance that it does. The unbalance of any reachable state is not greater than 1/n, in other words 1/n is the highest probability that one party cannot achieve its goal while the other can. It is assumed that the number of commitments per contract is then high, as this would cause the probability to tend towards zero as the number of n rises. This is possible by the inclusion of the TTP the protocol uses.
 
-The TTP described in the paper, \cite{ASW09}, is described as a non-optimistic protocol. Parties can contact the TTP whenever they want to try and achieve the whole contract at that stage. To do this, commitments are used by the parties to create resolve requests. These resolve requests are built using the most recent commitment received by that party, so for instance party $R$ can form a resolve request, $RR{_{R}^{i}}$ using a commitment $CMT{_{O}^i}$ provided $i \in \{1,...,N\}$. The exact format of these resolve requests as follows:\\
+The TTP described in the paper, \cite{ASW09}, is described as a non-optimistic protocol. Parties can contact the TTP whenever they want to try and achieve the whole contract at that stage. To do this, commitments are used by the parties to create resolve requests. These resolve requests are built using commitments. One commitment the most recent commitment received by that party, so for instance party $R$ can form a resolve request, $RR{_{R}^{i}}$ using a commitment $CMT{_{O}^i}$ provided $i \in \{1,...,N+1\}$. The other commitment featured in a resolution request is the commitment most recently sent by the requesting party, so for party $R$, $RR{_{R}^{i}}$ would also feature the commitment $CMT{_{O}^i}$. The exact format of these resolve requests as follows:\\
 
 \centerline{RR${_{O}^{i}}$=$[$CMT${_{O}^{i+1}}$, CMT${_{R}^{i}}]_O$ \hspace{30mm}  RR${_{R}^{i}}$=$[$CMT${_{O}^{i}}$, CMT${_{R}^{i}}]_R$}
 
-There is also one other type of resolve request that can be made. It is possible party $O$ to make a resolve request without having a commitment from party $R$; this is necessary in such a case as party $R$ has refused to send a response to the first commitment. However, this type of request cannot yield a resolved request and the reason why is shown below.
+Note how the resolve request for party $O$ has an upper value of $i+1$ rather than $i$; this is to help improve balance between the two parties, as the originator has a disadvantage by having to trust the other party. This will be expanded upon later, showing more features of the protocol that have been implemented to help mitigate this difference of balance.
 
+There is also one other type of resolve request that can be made. It is possible party $O$ to make a resolve request without having a commitment from party $R$; this is necessary in such a case as party $R$ has refused to send a response to the first commitment. This resolve request is referred to as the ``zero request'', and has a format as follows:\\
+
+\centerline{RR${_{O}^{i}}$=$[$CMT${_{O}^{i+1}}$, {\tt abort}$]_O$}
+
+Here, {\tt abort} is used as opposed to commitment; {\tt abort} is a fixed token used only for this purpose. According to the rules of the TTP, shown below, it wouldn't be possible to obtain the contract if the zero resolve request alone was sent to the TTP. However the benefit of it arises should party $R$ contact the TTP as soon as possible and obtain the contract; the rules of the TTP, detailed below, would mean that the zero request would be met with the same result as that of the resolve request sent by party $R$.
 
 \section{TTP Rules}
-These are the rules the TTP follows if a party contacts it with a request for their desired contract. It can be found in \cite{ASW09} in its original form; here it has been loosely changed to be more readable, as this paper doesn't cover the maths or reasoning with depth that the original does. Here, i is the number of commitments the party has received and n is the total number of commitments.
+These are the rules the TTP follows if a party contacts it with a request for their desired contract. It can be found in \cite{ASW09} in its original form; here it has been loosely changed to be more readable, as this paper doesn't cover the maths or reasoning with depth that the original does. Here, $i$ is the number of commitments the party has received and $N$ is the total number of commitments. The $i$ is obtained through the resolve request; it is equivalent to the $i$ value contained in the received commitment embedded in the resolve request.
 
 \begin{enumerate}
 \item If this is the first request, resolve it with probability of $i/N$, and reject with probability $(N-i)/N$
-\item If this party has made a request before, ignore this request
-\item If the other party has already made a request, then:
-\subitem If the other party's request was resolved, the request is resolved
-\subitem If the other party was rejected and the other request had fewer commitments than this request does, resolve with a probability i/n and reject with a probability $(N-i)/N$
-\subitem If the other party's request was rejected and the other request didn't have fewer commitments than this one, reject this request
+\item Else if this party has made a request before, ignore this request
+\item Else if the other party has already made a request, then:
+\subitem-- If the other party's request was resolved, the request is resolved
+\subitem-- Else if the other party was rejected and the other request had fewer commitments than this request does, resolve with a probability i/n and reject with a probability $(N-i)/N$
+\subitem-- Else if the other party's request was rejected and the other request didn't have fewer commitments than this one, reject this request
 \end{enumerate}
 
 %The reason that these rules allow a maximum "unbalance" of 1/n is this; there is always an element of risk on the originators part. Whoever sends a commitment first is always going to achieve their contract last, and therefore incurs the risk that once they've sent their final commitment, the other party now with their contract, does not send the final commitment to the originator. With the introduction of the TTP, the originator could then contact the TTP, who would use rule 1 in this instance. If this is the last bit, then the second part of that rule would mean the chances of the originator not achieving the contract would be 1/n.
@@ -308,24 +342,28 @@ The first rule is designed to give players an increasing probability that they w
 The second rule means that parties cannot keep sending requests to the TTP. If this wasn't enforced, there is the risk a party may keep contacting the TTP  to increase their chances of gaining their contract, or even to just slow the TTP down in some way, giving a potential advantage to them over the other party.
 
 \subsection{Third Rule}
-The third rule is concerned with parties contacting the TTP when the other party already has. The first clause means that if one party has been successful in their request, so will the second party. This is important as it keeps the protocol fair; the protocol does not want to be in a position where one party can be successful when the other one can't. The second and third clauses however are slightly more complex, and deal with how the request should be handled if the initial request failed. The second clause deals with the situation where one party has contacted the TTP, but commitment sending has continued; in such a case, the new request is treated as though it is the first request, with the same probabilities of success and failure as it would have been if this was the first request.
-If the current request doesn't have more commitments, that can mean one of two things; either the other party has just contacted the TTP and been unsuccessful, or there is dishonesty in at least one of the commitments. In the case of the former, it would be unfair to award the party the contract as the other party has been rejected and has no option as interactions have ceased, due to the number of commitments not being higher. In the case of the latter, we have a cheat and a scoundrel; safest just to deny everyone.
+The third rule is concerned with parties sending resolve requests the TTP when the other party has already done so. The first clause means that if one party has been successful with their resolve request, so will the second party. This is important as it keeps the protocol fair; the protocol does not want to be in a position where one party can be successful when the other one cannot. The second and third clauses however are slightly more complex, and deal with how the request should be handled if the initial resolve request, sent by the other party, failed. The second clause deals with the situation where one party has sent a resolve request to the TTP, but the gradual commitments have continued to be sent; in such a case, the new resolve request is treated as though it is the first request to arrive, with the same probabilities of success and failure as it would have been if this was the first request and the first rule was being applied.
+If the current resolve request doesn't have a higher number of received commitments than the number contained in the previous request, that can mean one of two things; either the other party has just contacted the TTP and been unsuccessful, or there has been dishonesty in at least one of the commitments. In the case of the former, it would be unfair to award the party the contract as the other party has been rejected and has no option as interactions have ceased, due to the number of commitments not being higher. In the case of the latter, and parties are obviously behaving outwith the rules of the TTP, the safest option is to deny the contract to both parties.
 
-\section{The Property}
+\section{The Unbalance Property}
+
+
+There is one key property featured in the paper; the protocol promises that the probability of unbalance occurring will never reach higher than $1+1/N$.
+Balance was defined by Chadha et al. \cite{chadha2001inductive}, for an honest party $A$ and a dishonest party $B$. Balance comes when during an instantiation of a protocol, it is not possible to reach a state where the dishonest party has both a strategy to obtain the contract from the honest party $A$, and also a strategy to ensure the honest party $A$ can never obtain the contract, no matter how the TTP, honest party and the communication channels behave. In the paper,  this has been expressed as follows:\\
 
 \centerline{$ G{_{Pr}},q_{Pr}^{0}\models  \ll A, T, B, X, S \gg ^{>0} \diamondsuit (\ll A, S, B \gg^{\ge Pa} \diamondsuit \varphi{_{abr}}  \wedge \ll A, S, B \gg^{\ge Pr} \diamondsuit \varphi{_{res}}) $}
 
-There is one key property featured in the paper, one that promises that the probability of unbalance occurring will never reach higher than $1+1/N$. Unbalance is described such that at any point of the protocol, the probability that a corrupt party has a strategy to deny its honest adversary the contract and the probability that the same party will have a strategy to obtain a contract. This can be expressed as follows:\\
-$\ll participants \gg ^{>0} \diamondsuit (H_{denied}  \wedge C_{successful}) $
+Due to the complexity of the above property, it has been translated to a more human readable set of conditions:
+$\ll participants \gg ^{>0} \diamondsuit (H_{denied}  \wedge C_{successful})$.
 
-This is the property the paper is written to express. It is vital to the reasoning for the protocol, as it is what gives the protocol purpose. ?!?
+
 \subsection{Breakdown of Property}
 Here, $participants$ refers to all the elements present in the protocol; the Trusted Third Party, the honest party, the corrupt party, the buffer, and the strategy. The strategy is the steps taken by the corrupt party to ensure it's goals are achieved. The buffer is the channel the participants use to send messages to each other, both commitments and requests to the Trusted Third Party. Together, these elements have the probability greater than zero that at some stage during the protocol, the two conditions are simultaneously fulfilled.\\
 The section of the property $H_{denied}$ refers to the probability that at a certain point in the interaction, the corrupt party has a strategy that will stop the honest party from gaining the contract, either by receiving commitments or contacting the Trusted Third Party. In the paper, this is denoted as  $\ll A, S, B \gg^{\ge Pa} \diamondsuit \varphi{_{abr}}$, the former half showing the corrupt party, strategy and buffer are all participants. \\
 The section of the property $C_{successful}$ is the probability that a condition is fulfilled. This condition is that at a certain point in the interaction between the parties, the corrupt party can utilise a strategy to obtain the contract. Again, this can be either by receiving the necessary commitments from the adversary, or by contacting the TTP. In the paper, this is described as $\ll A, S, B \gg^{\ge Pr} \diamondsuit \varphi{_{res}}$. \\
 It is not important which party assume which role; the property is described in the paper in such a way as one party assumes the role as corrupt and uses strategies, and the other party is honest. There are no restrictions on this.
 \subsection{Additional Requirements}
-There are certain additional conditions that must be met for the protocol to hold. The first is that every bit that is sent must eventually arrive. The property is no more explicit than this, and no promise is made as to the speed or efficiency of the commitment's delivery; the property simply states every commitment sent arrives in full, eventually.\\
+As in the definition provided by \cite{chadha2001inductive}, here there are also certain additional conditions that must be met for the protocol to hold. The first is that every bit that is sent must eventually arrive. The property is no more explicit than this, and no promise is made as to the speed or efficiency of the commitment's delivery; the property simply states every commitment sent arrives in full, eventually.\\
 The second is that at no stage of the protocol do the honest party or the Trusted Third Party become corrupt; these parties must only act in an honest manner for the duration of the interaction.
 
 
@@ -348,11 +386,11 @@ The requirement for a party to be determined as being corrupt or not is fundamen
 
 \section{Honest}
 
-Honesty is also a key concept that requires definition due to the description of the unbalacne property. Here, it has been assumed that an honest party has a more restricted level of interaction than that of a corrupt party. An honest party will only send a commitment if and only if the other party has sent commitments appropriately; that is, an honest party will only refuse to send commitments if it has reason to be suspicious of the other party. Suspicious activity here has been treated as failing to send a commitment. An honest party can also contact the TTP at any stage for it's turn, however if it does so it will not be able to send a commitment that turn; the honest party must chose between sending a commitment or contacting the TTP.
+Honesty is also a key concept that requires definition due to the description of the unbalance property. Again, the paper lacks a definition of what an honest party is capable of whilst still being considered ``honest.'' Here, it has been assumed that an honest party has a more restricted level of interaction than that of a corrupt party. An honest party will only send a commitment if and only if the other party has sent commitments appropriately; that is, an honest party will only refuse to send commitments if it has reason to be suspicious of the other party. Suspicious activity here has been treated as failing to send a commitment. It is also assumed that an honest party can also contact the TTP at any stage, however if it does so it will not be able to send a commitment that round; the honest party must chose between sending a commitment or contacting the TTP, therefore not being able to hide its attempt at sending a resolve request.
 
 \section{Fairness}
 
-Any protocol that deals with multiple parties should be fair. Fair here is used to describe a protocol that does not give an advantage to one party at the end of the interaction. Either both parties are successful or neither is; similar to a NOT XOR logic gate. The table at \ref{fair} below shows the possible outcomes of the protocol in terms of which parties receive the contract, and each will be labelled to indicate whether this is a fair or unfair outcome.
+Any protocol that deals with multiple parties should be fair. Fair here is used to describe a protocol that does not give an advantage to one party at the end of the interaction. Either both parties are successful or neither is; similar to a NOT XOR logic gate. The table at \ref{fair} below shows the possible outcomes of the protocol in terms of which parties receive the contract, and each will be labelled to indicate whether this is a fair or unfair outcome, provided both parties act honestly. It is not seen as unfair for a corrupt party to be unable to achieve the contract at any stage; parties that do not obey the rules of the TTP should not receive the same degree of support as those that do follow the rules of the protocol.
 
 \begin{table}[]
 \centering
@@ -365,7 +403,7 @@ Any protocol that deals with multiple parties should be fair. Fair here is used 
       Unsuccessful & Unsuccessful & Yes
  
 \end{tabular}
-\caption{A table showing which outcomes of the protocol are considered fair}
+\caption{A table showing which outcomes of the protocol are considered fair with honest interaction}
 \label{fair}
 \end{table}
 
@@ -373,40 +411,45 @@ Any protocol that deals with multiple parties should be fair. Fair here is used 
 
 As part of the background research into this project, it was deemed beneficial to examine other protocols that both fulfilled the "contract signing" criteria, and also introduced in further detail concepts such as optimism, non-optimism and non-repudiation within these protocols.
 
-Rabins protocol is a non-optimistic CSP. This means it involves interaction with the TTP every instance of the protocol, regardless of the behaviour of the parties involved. Every day, the third party broadcasts an integer between 1 and a pre-defined N. Prior to the exchanging of information between the parties, the parties send messages to each other of the following form:
+Rabin's protocol \cite{rabin1983transaction}, is a non-optimistic CSP. This means it involves interaction with the TTP every instance of the protocol, regardless of the behaviour of the parties involved. Every day, the third party broadcasts an integer between 1 and a pre-defined N. Prior to the exchanging of information between the parties, the parties send messages to each other of the following form:
 \begin{lstlisting}
     I am committed to C, if integer i is chosen on date D.
 \end{lstlisting}
 A send this to B, who then replies with the same message. Party A would the retransmit with the "i" updated to "i+1". The idea here is that provided B responds when they are contacted by A each time, when the integer between 1 and N is transmitted daily by the third party, if that integer fulfils one parties promise, it will also fulfil a promise made by the other party. There is a risk however that transmission is not always guaranteed by both parties; consider the situation where A sends a commitment immediately prior to the transmission. Consider here what would happen should the transmitted integer match the one proposed by A; B would be under no obligation to send their contract, unlike party A. This leads to the probability of only one party being committed in the termination state is $1/N$.
 
-The BGMR protocol is similar to Rabins in that it has the same goal - to allow  two parties to exchange commitments to a pre-defined contract. There is however a greater focus on the concepts of privilege and fairness. The protocol is such that it can never be the case that only one party can achieve the contract. The behaviour of the protocol is very much similar to that of Rabins, exact that instead of transmitting a target integer, the two parties send ever increasing probabilities the protocol will resolve before a deadline. Ideally, the parties reach the probability of one; however, if there is an issue with receiving an expecting commitment, the differences to Rabins begin. If a party contacts the third party, referred to as a judge, the judge takes not of the latest probability that the contract will be fulfilled. Then, after the deadline passes, the judge resolves the contracts for both parties with the probability stipulated in the the transmission to the judge. BGMR assumes that the transmissions between parties have  digital signatures that cannot be forged, meaning the judge does not need to be concerned with fraudulent requests.
+The BGMR protocol, \cite{ben1990fair}, is similar to Rabin's in that it has the same goal - to allow  two parties to exchange commitments to a pre-defined contract. There is however a greater focus on the concepts of privilege and fairness. The protocol is such that it can never be the case that only one party can achieve the contract. The behaviour of the protocol is very much similar to that of Rabin's, exact that instead of transmitting a target integer, the two parties send ever increasing probabilities the protocol will resolve before a deadline. Ideally, the parties reach the probability of one; however, if there is an issue with receiving an expecting commitment, the differences to Rabin's begin. If a party contacts the third party, referred to as a judge, the judge takes not of the latest probability that the contract will be fulfilled. Then, after the deadline passes, the judge resolves the contracts for both parties with the probability stipulated in the the transmission to the judge. BGMR assumes that the transmissions between parties have  digital signatures that cannot be forged, meaning the judge does not need to be concerned with fraudulent requests.
 
+Asoken et al. \cite{asokan1998optimistic} defined the concept of timeliness as ``one player cannot force the other to wait for any length of time - a fair and timely termination can be forced by contacting the third party.'' As such, Norman and Shmatikov \cite{norman2006analysis} introduce an extension to BGMR, referred to as Timely BGMR, or TBGMR. The difference between BGMR and TBGMR is that when the third party is contacted in TBGMR, the TTP makes its decision immediately. Then, once the verdict has been announced and reaches an honest participant, the honest participant ceases communication.
+
+All three protocols are analysed by Gethin and Shmatikov in \cite{norman2006analysis}, using the PRISM model checker, \cite{Pri}. TBGMR is shown to have a weakness; there is an attack strategy for a corrupt party that can cause unbalance with a high probability. There was also found a quantification for the trade-off between the probability of the attacker winning and the requirement to delay messages from the TTP to the honest party.
 
 
 
 
 \chapter{DTMCs and the first Model}
 \section{Rationale}
- The first iteration of the model was built to accommodate the functionality expressed in \ref{csp}, the most simple interaction a CSP can fulfil. DTMC models are ideal for this type of interaction, as there is a limited number of actions that can be taken at any one point; there is a predictable style of interaction. Here, probabilities of moves are not required, which simplifies the model further, however, turns have been added, to ensure a player sends if and only if it's their turn. Below is the model built in PRISM for the first iteration, in full.\\
+ The first iteration of the model was built to accommodate the functionality expressed in \ref{csp}, the most simple interaction a CSP can fulfil. DTMC models are ideal for this type of interaction, as there is only one action that can be taken at any one point; there is a predictable style of interaction. Here, probabilities of moves are not required, which simplifies the model further. Turns are featured, to ensure a the players send commitments alternately. Below is the model built in PRISM for the first iteration, in full.\\
 
 \begin{center}
 \verbatiminput{dtmc.pm}
 \end{center}
 
-The naming conventions used in the model is slightly different to the one featured in the paper. This was primarily due to the length of the terms used in the paper, as well as other protocols of a similar nature using different key words. As such, included here is a list of the variables and commands featured in the model and and explanations to the purpose each is used for.
+The naming conventions used in the model is slightly different to the one featured in the paper. This was primarily due to the length of the terms used in the paper, as well as other protocols of a similar nature using different key words. As such, included here is a list of the variables and commands featured in the model and and explanations to the purpose each is used for. $X$ ranges over party $O$ and party $R$, $X \in \left ( \in \left \{ O,R \right \} \right )$
 
+\subsubsection{Variables}
 \begin{description}
-\item[variables]
 \item[sentBitsX] Represents the number of commitments that particular party has sent. With honestly playing parties, can be used to determine how many ``rounds'' have been completed.
-\item[recdBitsX] Represents the number of commitments a particular party has received during the protocol. Once a party has received $N+1$ of these, they are considered to have achieved the contract. These should at any stage be the same as the opponents $sentBitsX$ value, due to the buffer constraints mentioned previously.
+\item[recdBitsX] Represents the number of commitments a particular party has received during the protocol. Once a party has received $N+1$ of these, they are considered to have achieved the contract. These should at any stage be the same as the opponents {\tt sentBitsX} value.
 \item[turnX] Used to represent whose turn it is. Has three possible values; 0 symbolises that it isn't that parties turn. 1 is used to signal that it is that parties turn. 2 is used to represent that the party has finished.
 \item[N] Used by the model to store globally the predefined value of N. Accessed by all, changed by none.
-\item[commands]
-\item[begin] This is the first command to execute, determined by being the only command to be executable when both parties turn is set to 0. This sets the Originator's $turnO$ variable to 1 and the Responder's $turnR$ to 0, causing the Originator to go first. 
-\item[sendX] This command makes all the necessary changes to both modules to resemble sending a bit. Featured in both modules for each party, one command increases the senders $sendBitsX$ variable and sets that senders turn 0. The other command increments the recipients $recdBitsX$ variable and sets that party's turn variable to 1.
+\end{description}
+\subsubsection{Commands}
+\begin{description}
+\item[begin] This is the first command to execute, determined by being the only command to be executable when both parties turn is set to 0. This sets the Originator's {\tt turnO} variable to 1 and the Responder's {\tt turnR} to 0, causing the Originator to go first. 
+\item[sendX] This command makes all the necessary changes to both modules to resemble sending a bit. Featured in both modules for each party, one command increases the senders {\tt sendBitsX} variable and sets that senders turn 0. The other command increments the recipients {\tt recdBitsX} variable and sets that party's turn variable to 1.
 \end{description}
 
-There is an additional, unlabelled command in the originator; this is designed to cause a loop when the aims of the protocol have been fulfilled and both parties have the contract they desire. Note here the corresponding commands in each module, noted by the same label. For these to be executable, the guards in both need to be satisfied. The reason for having these multiple commands is so that when say party $R$ sends a commitment, party $O$ can update its $recdBitsR$ variable and set its turn variable to 1; as stated previously, a command in one module cannot update values in another.
+Note here the corresponding commands in each module, noted by the same label. For these to be executable, the guards in both need to be satisfied. The reason for having these multiple commands is so that when say party $R$ sends a commitment, by updating its {\tt sentBitsR} varibale, party $O$ can receive the commitment and update its {\tt recdBitsR} variable and set its turn variable to 1; as stated previously, a command in one module cannot update values in another.
 
 The model expresses the ideal protocol when both parties act honestly without contacting the TTP, using the definition of honesty found as described in the previous chapter. That is to say, both parties honour the exchange and send each other commitments until the entire contract has been received by both parties. 
 
@@ -416,10 +459,10 @@ The model expresses the ideal protocol when both parties act honestly without co
 Analysis of the DTMC was concerned with ensuring that the model behaved in the predicted manner. A list of properties where created in PRISM to ensure that all possible outcomes of honest interaction where as they should be. This excludes interaction with the TTP; this model was designed purely to model achievement of the protocol by the use of the Gradual Commitment Protocol. The first of these such properties is as follows:
 
 \begin{lstlisting}
-            Pmax=? [((recdBitsR=N=1)&(recdBitsO=N+!))]
+            P=? [((recdBitsR=N+1)&(recdBitsO=N+1))]
 \end{lstlisting}
 
-This property finds the maximum probability of both parties gaining the contract. The result of this was 1 as expected; this is because the parties send gradual commitments until both have achieved the protocol. This key as it meant that the most basic function of the protocol had been implemented; two parties could make gradual commitments until they were both satisfied by gaining the complete contract.
+This property finds the probability of both parties gaining the contract. Recieving the contract is denoted as {\tt recdBitsX} being equal to $N+1$, as per the protocol describes. The result of this was 1 as expected; this is because the parties send gradual commitments until both have achieved the protocol. This key as it meant that the most basic function of the protocol had been implemented; two parties could make gradual commitments until they were both satisfied by gaining the complete contract.
 
 The model was also checked for the case where neither party was able to achieve the contract; this was modelled by the property:
 
@@ -429,28 +472,29 @@ The model was also checked for the case where neither party was able to achieve 
 
 The justification for checking this property is less trivial; although a protocol where this can happen is still to be considered fair, this should not happen here. It was vital to ensure that should the two parties act in honesty for the duration of the protocol, then they will still be successful. This highlights the difference between a fair protocol and a balanced protocol. The maximum probability was indeed 0 as intended.
 
-The final stage to ensuring that the model wasn't unfair was to ensure that it cannot be the case that only one party is successful. Here, that was assessed by a single property that represented both variations of the issue; one half ensured $O$ wasn't unfairly successful, the second half ensured the same for party $R$.
+The final stage to ensuring that the model wasn't unfair was to ensure that it cannot be the case that only one party is successful. Here, that was assessed by a two properties as expressed below. 
 
 \begin{lstlisting}
-     Pmax=? [ G ((recdBitsR=N+1)&!(recdBitsO=N+1) | (recdBitsO=N+1)&!(recdBitsR=N+1))]
+     P=? [ G ((recdBitsR=N+1)&!(recdBitsO=N+1) ]     P=? [ G (recdBitsO=N+1)&!(recdBitsR=N+1))]
 \end{lstlisting}
 
-This gave a maximum probability of 0, meaning that neither of these situations can arise, which was expected. It would also have been as equally valid to have two separate properties created to express each half of the above property.
+This gave a maximum probability of 0, meaning that neither of these situations can arise, which was expected. This means that neother party has an advantage here in achieving their goal and denying their opponent.
 
 
-It is also important here that the unbalance property is met, with there being no states where the probability of unbalance is no higher than the promised thresh hold of $(1+1/N)$. Despite the fact both of these parties are honest, and there is no corrupt party present, there is no reason a party deemed to be corrupt in the model can't act as an honest party, so the property should still be checked. The unbalance property was modelled here as shown below.
+It is also important here that the unbalance property is met, with there being no states where the probability of unbalance is no higher than the promised thresh hold of $(1+1/N)$. Despite the fact both of these parties are honest, and there is no corrupt party present, there is no reason a party deemed to be corrupt in the model cannot act as an honest party, so the property should still be checked. The unbalance property was modelled here as shown below. As discussed previously, the unbalance property is the sum of two probabilities; the probability of there being a strategy that gains one possibly corrupt party the contract, and the probability of there being another strategy that ensures the honest adversary is never successful in gaining the contract. 
 
 \begin{lstlisting}
-(Pmax=? [ F (recdBitsR=N+1)]) + (Pmax=? [ G !(recdBitsO=N+1)])
+(P=? [ F (recdBitsR=N+1)]) + (P=? [ G !(recdBitsO=N+1)])
 \end{lstlisting}
 
 The probability of unbalance was shown to be zero; this is expected, as due to the inherent honest nature of the parties in this version of the model, it shouldn't be possible for one party to cheat the other out of getting the contract. The lack of a TTP shouldn't impact the results, as the states reachable here can be treated as a subset of the states possible in a fuller model; there's no requirement a party has to contact the TTP, therefore the states achieved here are fully possible in a full model.
+
 
 Due to the size and limited nature of the model, it is possible to show a complete run of the protocol via manual simulation in PRISM. Whilst the model has been shown to possess the required and expected properties, it is beneficial to the reader to see how PRISM treats execution of the models in terms of executions of actions and the updating of values. Therefore, an example manual simulation has been featured below.
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=100mm]{images/dtmcResults.png}
+\includegraphics[width=160mm]{images/dtmcResults.png}
 \caption{The results of manual simulation of the DMTC in the PRSIM engine}
 \label{dtmcEx}
 \end{figure}
@@ -467,7 +511,7 @@ Despite being limited in terms of how much of the protocol can be modelled, the 
 \chapter{MDPs and the Second Model}
 
 \section{Rationale}
-The introduction of non-determinism via an MDP style model is vital; the protocol describes parties as being able to make a choice, be it choosing to send a bit, ignoring a party or contacting the TTP. Therefore it is necessary to take the DTMC model and convert it to an MDP style model. 
+The introduction of non-determinism via an MDP style model is vital; the protocol describes parties as being able to make a choice, be it choosing to send a bit, ignoring a party or contacting the TTP. Therefore it is necessary to take the DTMC model and convert it to an MDP model. 
 
 
 \section{Model Changes in PRISM}
@@ -476,24 +520,25 @@ MDPs are required to implement a model that allows each party multiple choices p
 
 \subsection{Introduction of Interaction}
 
-To accommodate the expanded possibilities possible in an MDP model, it is necessary to add more commands to each of the modules to achieve a model that more closely represents the protocol. The additions to each model are similar, and the additions made to party $O$ are shown below. Note how the guards in the [reqX] and [ignoreX] commands have conditions where they can both be fulfilled, as can [sendX]. This is what gives the model it's non-deterministic property and allows the MDP to take place.
+To accommodate the expanded actions possible in an MDP model, it is necessary to add more commands to each of the modules to achieve a model that more closely represents the protocol. The additions to each model are similar, and the additions made to party $O$ are shown below. Note how the guards in the {\tt reqO} and {\tt ignoreO} commands have conditions where they can both be fulfilled, as can {\tt sendO}. This is what gives the model it's non-deterministic property and allows the MDP to take place.
 \begin{lstlisting}
-    contactO : [0..1]; //1 represents contacted TTP
-    resultO : [0..2]; //1 represents resolved contract by TTP, 2 represents rejection
+  contactO : [0..1]; //1 represents contacted TTP, 0 represents no contact
+  resultO : [0..2]; //1 represents resolved contract by TTP, 2 represents rejection
+  //0 represents no result has been achieved through resolve requests
 	
-    //can contact TTP provided it hasn't done so
-    [reqO] turnO=1 & !(contactO=1) & recdBitsO<=N & recdBitsO>=0 -> (contactO'=1);
-    [replyO] sendO=1 ->(resultO'=responseO) & (turnO'=0);
-    [replyR] turnO=0 -> (turnO'=1);
-    [ignoreO] turnO=1 & !(contactO=1 & resultO=0) -> (turnO'=0);
-	[ignoreR] turnO=0 -> (turnO'=1);
+  //can contact TTP provided it hasn't done so
+  [reqO] turnO=1 & !(contactO=1) & recdBitsO<=N & recdBitsO>=0 -> (contactO'=1);
+  [replyO] sendO=1 ->(resultO'=responseO) & (turnO'=0);
+  [replyR] turnO=0 -> (turnO'=1);
+  [ignoreO] turnO=1 & !(contactO=1 & resultO=0) -> (turnO'=0);
+  [ignoreR] turnO=0 -> (turnO'=1);
 \end{lstlisting}
 
-The action $reqO$ represents the party making a resolution request and ocntacting the TTP. Here, teh number of received commitments has to be greater than or equal to zero; in the party $R$ equivalent, this number is set to 1. The reason for this is the Originator has the capability to create a zero commitment resolution request, unlike the responder. With the exception of this change, the Responder version of these additions are identical. After the TTP has been contacted, the action $replyO$ will be executed, updating the variable $resultO$, which is used to store the results of a resolution request. The command $ignoreR$ is used to end a party's turn without requiring it to send a commitment.
+The action $reqO$ represents the party making a resolution request and contacting the TTP. Here, the number of received commitments has to be greater than or equal to zero; in the party $R$ equivalent, this number is set to 1. This is due to the different ways the two parties can make resolve requests; as party $O$ has the capability of forming the zero request, it requires no received commitments to form a valid resolve request. Party $R$ still requires at least one received commitment to form a valid resolve request. The reason for this is the Originator has the capability to create a zero commitment resolution request, unlike the responder. With the exception of this change, the Responder version of these additions are identical. After the TTP has been contacted, the action $replyO$ will be executed, updating the variable $resultO$, which is used to store the results of a resolution request. The command $ignoreR$ is used to end a party's turn without requiring it to send a commitment.
 
 The commands $replyR$ and $ignoreR$ are used solely to update the turn variable when the other party has taken their turn. This is required as it is not possible for a module to update a variable stored within another module. It is however possible for one module to use the values stored in a variable in another module for logical purposes.
 
-There is added logic to the [reqX] command not present in the description of the protocol. As the TTP is designed to ignore requests from parties who have already contacted it, a problem presented itself in the from of mapping out this behaviour. It was decided that as there is no difference in terms of states between a party being ignored by the TTP and that party not contacting the TTP; the outcome is identical. It was also decided that in practical turns, any party participating in the protocol would be familiar in the rules of the protocol, and therefore would be unlikely to make a second request regardless.\\
+There is added logic to the [reqX] command not present in the description of the protocol. As the TTP is designed to ignore requests from parties who have already contacted it, a problem presented itself in the from of mapping out this behaviour. It was decided that as there is no difference in terms of states between a party being ignored by the TTP and that party not contacting the TTP; the outcome is identical. This stops either party spamming infinite caused by repeatedly contacting the TTP, without receiving a response. It was also decided that in practical terms, any party participating in the protocol would be familiar in the rules of the protocol, and therefore would be unlikely to make a second request regardless.\\
 
 
 \subsection{Implementation of the TTP}
@@ -553,7 +598,9 @@ There is only one update to be considered here, which means that it will occur w
 \begin{lstlisting}
 (sendO=0 & sendR=0) & responseR=0 & responseO=2 & iO+1<recdBitsR & recdBitsR<=N
 \end{lstlisting}
-The variable iO represents the number of commitments the Originator had received when contacting the TTP, and the reason for adding one to that value is due to the nature of the protocol. As the Originator sends first, that party will have one less commitment than the Recipient party every time it sends a commitment. The addition of one is to balance out this unbalance in the protocol. 
+ As the Originator sends first, that party will have one more sent commitments than received commitments after every honest turn. 
+ Therefore, unlike with the responder, there is a different value associated with the two commitments in the resolve requests sent by party $O$, the sent commitments having one count higher than the received commitments. The variable {\tt iO+1} is used here to address the unbalance caused by this; without it, the comparison between the sent commitments from $O$ and the received commitments of $R$ would yield an incorrect result. 
+
 
 
 \section{Differences to DTMC}
@@ -562,7 +609,7 @@ Due to the expansion, it is now possible to choose an action to follow from a li
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=160mm]{images/mdpPExample.png}
+\includegraphics[width=180mm]{images/mdpPExample.png}
 \caption{The results of manual simulation of an MDP in the PRSIM engine}
 \label{mdpPEx}
 \end{figure}
@@ -580,6 +627,8 @@ To assess the MDP style model, new properties had to be created. The following i
 Pmax=? [ F ((recdBitsR=N+1|resultR=1)&(G !(recdBitsO=N+1|resultO=1))) ]
 \end{lstlisting}
 
+The condition {\tt (recdBitsR=N+1|resultR=1)} represents the case where party $R$ can achieve the contract; if {\tt recdBitsR=N+1} is fulfilled then the party has gained the contract throught the exchanges of the gradual commitment protocol, or if {\tt resultR=1} that means the party has gained the contract by sending a successful resolve request to the TTP. \\
+The condition {\tt (G !(recdBitsO=N+1|resultO=1))} is slightly more complex. The variables that express the methods gained are largely similar, the only difference being it is the party $O$ that is in question here. The addition of {\tt G !} means that this condition cannot be met at any stage of the protocol.\\
 When checking this property with the model with both parties participating in a corrupt manner, the maximum probability of this occurring was 1. Figure \ref{problem1} illustrates why this is the case.
 
 \begin{figure}[ht!]
@@ -591,11 +640,35 @@ When checking this property with the model with both parties participating in a 
 
 \subsection{Two Corrupt Parties}
 
-Through various methods of interaction, it is possible for one party to never obtain a contract. For instance, it is possible for both parties to act honestly to a point where they both have the power to obtain the contract through the TTP, having n commitments. It is then possible for one of the parties to contact the TTP and achieve their contract, while the other party passes up on there turn indefinitely. Whilst this isn't a type of interaction likely to take place, it is possible and leads to a high probability of the interaction finishing in an unfair state. However, if one party behaved in a non-corrupt manner, modelled by removing the ability for the party who ignores the other, in this case O, this would force the party into some form of action, and in the same set of situations, the party would either have to send the final commitment or if that's no longer an option, contact the TTP to obtain the contract. To do this, the guard at [ignoreO] was set to false, meaning the command wold not be executed as the conditions in the guard cannot be met.
+Through various methods of interaction, it is possible for one party to never obtain a contract. For instance, it is possible for both parties to act honestly to a point where they both have the power to obtain the contract through the TTP, having $N$ commitments. It is then possible for one of the parties to contact the TTP and achieve their contract, while the other party passes up on there turn indefinitely. Whilst this isn't a type of interaction likely to take place, it is possible and leads to a high probability of the interaction finishing in an unfair state. However, if one party behaved in a non-corrupt manner, modelled by removing the ability for the party who ignores the other, in this case O, this would force the party into some form of action, and in the same set of situations, the party would either have to send the final commitment or if that's no longer an option, contact the TTP to obtain the contract. To do this, the guard at {\tt ignoreO} changed as follows:
+\begin{verbatim}
+[ignoreO] false -> (turnO'=0);
+\end{verbatim}
 
-\subsection{Introduction of the honesty}
+The use of the {\tt false} condition means that {\tt ignoreO} cannot be executed, as the guard cannot be satisfied. 
 
-The result of this change did give a lower maximum probability of unfairness; the probability here proved to be $(N-1)/N$. The reason for this is there was still the possibility of O to go to the TTP prematurely and be rejected with a probability $(N-1)/N$; if the party went to the TTP as soon as possible, giving the high probability of rejection, that probability would be $(N-1)/N$. The party could then, as described in \ref{misfireTTP}, continue to send commitments as normal, with party R not sending the final commitment to O, rendering the property true. This is more probable behaviour than before; a party could in theory contact the TTP prematurely if the other party took longer to send a commitment than assumed reasonable, and it is not unlikely that party R is always compelled to send the final commitment to party O, as this is the main issues the protocol looks to combat. 
+\subsection{Introduction of the honest party}
+
+The result of this change did give a lower maximum probability of unfairness; an experiment was carried out with $N$ ranging from 1 to 20. The results can be found in figure \ref{NM!}.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=180mm]{images/nm1.png}
+\caption{The results of an experiment finding the maximum probability of unfairness}
+\label{NM!}
+\end{figure}
+
+As shown here the probability here proved to be different when fairness was checked with the corrupt party changing. For a corrupt party $R$, the maximum probability was shown to be 1, whereas the maximum probability of unfairness for a corrupt party $O$ proved to be quantifiable as $(N-1)/N$. The reason for this is shown in figure FIGAA and figure FIGAA.
+
+As it is possible for party $O$ to create a zero resolve request, the party can contact the TTP in it's first turn, which will result in a rejection probability of 1. This would mean that if party $R$ did not leave the exchange and instead waited for the first commitment, modelled here as executing {\tt ignoreR}, the two parties could then execute the gradual commitment protocol as if nothing had happened. However,should the corrupt party $R$ receive it's final commitment and obtain the contract, party $R$ could then leave the exchange. Usually, party $O$ would contact the TTP in such a situation, however here this is no longer possible; party $O$ has already contacted the TTP, meaning there is no way it can get the contract through the TTP.
+
+Figure FIGAAA shows what could happen should party $O$ be the party performing in a corrupt manner. 
+It would be possible for party $R$ to create a resolve request after being sent the first commitment; this is in contrast to the previous example, where party $O$ could create a resolve request without requiring the other party to send a commitment. Similar problems then arise if the gradual commitment sending is resumed as normal; however the final interactions are slightly different. As party $O$ receives its penultimate commitment, it is able to create a resolve request knowing it is guaranteed to be successful. As party $O$ is behaving in a corrupt manner, it has the option of not continuing with the protocol and exiting early.
+
+This shows a problem with the protocol; the two parties have different capabilities, despite the additions such as the zero resolve request. If one was to select a party to perform corruptly with, there is a distinct advantage to being the Responder if your aim is to obtain the contract whilst making sure the other party cannot. In the commerce example laid out in the introduction, this could mean that should one of the participants wish to swindle the other party, say the seller was dishonest, they would benefit from getting the other party to initiate the protocol and take on the role of the Originator.
+
+
+%$(N-1)/N$, with an exception to this when $N$ is equal to 1. The reason for this is there was still the possibility of O to go to the TTP prematurely and be rejected with a probability $(N-1)/N$; if the party went to the TTP as soon as possible, giving the high probability of rejection, that probability would be $(N-1)/N$. The party could then, as described in \ref{misfireTTP}, continue to send commitments as normal, with party R not sending the final commitment to O, rendering the property true. This is more probable behaviour than before; a party could in theory contact the TTP prematurely if the other party took longer to send a commitment than assumed reasonable, and it is not unlikely that party R is always compelled to send the final commitment to party O, as this is the main issues the protocol looks to combat. 
 
 \begin{figure}[ht!]
 \centering
@@ -604,7 +677,9 @@ The result of this change did give a lower maximum probability of unfairness; th
 \label{misfireTTP}
 \end{figure}
 
-\subsection{Multiple Turns Expansion}
+%As stated prior, $N$ equalling 1 does not conform to the same maximum probability of unfairness as other states. This is because the parties in the protocol are severely limited to what they can do with only two rounds in the protocol, the number of rounds being defined as $N+1$.
+
+\subsection{Multiple Turns Expansion} 
 
 Examining the states reachable by the protocol, it was found that the behaviour of the model may have been restricted by the interpretation of corrupt. As it stands, one party may make one move per turn, however it is not unreasonable that a party considered corrupt wouldn't be bound to do only one operation at a time. It may be the case that they decide to send multiple commitments, or contact the TTP as well as sending a commitment. Expanding the model to accommodate corrupt parties performing an arbitrary number of actions per turn had an impact on the maximum probability of unfairness as defined above. The probability rose back to 1, at studying the states it became clear why.
 
@@ -619,12 +694,17 @@ As shown in \ref{sneak}, if the corrupt party has the ability to perform multipl
 
 \subsection{Limitations of MDPs}
 
-The property of unbalance cannot be fully assessed using an MDP; MDP's lack the ability to pick out a strategy for an individual player. Therefore states reachable in an MDP can be reachable if parties work together to achieve that state; a feature that given the nature of the protocol is not one helpful. This means that the unbalance cannot be analysed fully on an MDP style model; however the two probabilities from the property added together can be assessed, not considering the strategy of a single player. There will be states here that can be reached by the participation of the parties that would not occur if a single party was strategizing. Using the following property, unbalance of the MDP was analysed:
+The property of unbalance cannot be fully assessed using an MDP; MDP's lack the ability to pick out a strategy for an individual player. Therefore states reachable in an MDP can be reachable if parties work together to achieve that state; a feature that given the nature of the protocol is not helpful. This means that the unbalance cannot be analysed fully on an MDP style model; however the two probabilities from the property added together can be assessed, not considering the strategy of a single player. There will be states here that can be reached by the participation of the parties that would not occur if a single party was strategizing. Using the following property, unbalance of the MDP was analysed:
 \begin{lstlisting}
- Pmax=? [G (recdBitsR=N+1 | resultR=1)] + Pmax=? [G!(recdBitsO=N+1 | resultO=1)]
+ Pmax=? [F (recdBitsR=N+1 | resultR=1)] + Pmax=? [G!(recdBitsO=N+1 | resultO=1)]
 \end{lstlisting}
 
-Here, there where many states that had a probability higher than $1+1/N$; for N=4, there were 362 states that had a probability higher than advised in the paper. However as stated, this is most likely due to the states only reachable by cooperation of parties, something the property does not allow for. It is therefore necessary to expand the model further to accommodate single player strategies, however interesting to note that these situations are possible. As this model resembles real world interaction, these situations may arise due to a number of innocent reasons, and unbalance could be introduced by limitations of real life systems, such as a party contacting the TTP prematurely due to a delay in the arrival of a commitment being seen as a refusal to send by the other party.
+The above property expressing balance does not appear too different to that of unfairness seen previously in the chapter. Unbalance is the sum of the probabilities that there is both a strategy to guarantee the corrupt player a contract, and another strategy focusing on blocking the honest adversary from achieving the contract. This means that those two separate conditions are looked at, with the results being summed. \\
+Again, the first half of the property deals with the maximum probability that the corrupt party can at sometime obtained the contract, either by receiving all the desired commitments causing {\tt recdBitsR=N+1} or by successfully gaining the contract from the TTP, setting {\tt resultR=1}.\\
+Like the fairness property, the second half focuses on the probability that the honest party, in this case $O$, cannot achieve the contract at any stage of the protocol. The difference here is that this is treated as a seperate entity, rather than part of the same condition.
+
+
+Here, there where many states that had a probability higher than $1+1/N$. However as stated, this is most likely due to the states only reachable by cooperation of parties, something the property does not allow for. It is therefore necessary to expand the model further to accommodate single player strategies, however interesting to note that these situations are possible. As this model resembles real world interaction, these situations may arise due to a number of innocent reasons, and unbalance could be introduced by limitations of real life systems, such as a party contacting the TTP prematurely due to a delay in the arrival of a commitment being seen as a refusal to send by the other party.
 
 
 It is important to note here that the probability being assessed results in the same maximum probabilities when the parties are swapped around; there is no benefit under these conditions to being the Responder as opposed to the Originator.
@@ -633,12 +713,12 @@ It is important to note here that the probability being assessed results in the 
 
 \section{Rationale}
 
-The rationale for using an SMG style model is based in the property being assessed. The property focuses on more than the probability a state can be reached; the protocol features the strategy one particular party can take. Having the model represent an SMG allows this type of property to be fully assessed.
+The rationale for using an SMG style model is based in the property being assessed. The property focuses on more than the probability a state can be reached; the focus of the unbalance property is the summation of two probabilities obtained assessing the likelihood of two outcomes extending from two strategies. Having the model represent an SMG allows this type of property to be fully assessed.
 This should have an effect on the probabilities mentioned in the previous section; as mentioned there, the probabilities arise due to 'unrealistic' behaviour. Using SMGs, it is possible to achieve a more realistic behaviour style out of the two parties.
 
 \subsection{Changes to model}
 
-Here, PRISM for Games was used, as without the extensions present in this version of PRISM, it was not possible to model or analyse SMG models.
+Here, PRISM for Games \cite{chen2013prism} was used, as without the extensions present in this version of PRISM, it was not possible to model or analyse SMG models.
 
 There were also changes required to turn the MDP model into an SMG model. These changes are shown below.
 \begin{lstlisting}
@@ -662,10 +742,11 @@ As the type of model is changing, it is necessary to also modify the property be
 \begin{lstlisting}
 (<<2>>Pmax=? [ F (recdBitsR=N+1|resultR=1)] + 
     <<2>>Pmax=? [ (G !(recdBitsO=N+1|resultO=1))] ) 
-        <= 1 + 1/N
+        > 1 + 1/N
 \end{lstlisting}
 
-The first part of the property relates to $\varphi{_res}$ mentioned earlier in the paper, and the second relates to $\varphi{_abr}$. All the analysis performed was also performed with an similar property that models R as the honest party and calculates the probabilities using strategies from O (player 1), and this will be developed on later in the paper. 
+The modelling of the unbalance property here is similar to the modelling of it found in the previous chapter. However, there is an addition here; the introduction of the party operator, $\ll 2 \gg$. This is the extension that allows the power of SMGs to be exploited; only strategies that party 2, in this case party $R$, can use to accomplish the conditions are included. \\
+Also included here is the check that the probabilities is within the expect range, $N+1$. Any states that defy this property will be listed when the property is assessed in the PRISM for games model checker.
 
 \section{Differences to the MDP}
 
@@ -673,7 +754,7 @@ The difference between the SMG model and the MDP model are subtle in comparison 
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=120mm]{images/smgExample.png}
+\includegraphics[width=160mm]{images/smgExample.png}
 \caption{The results of manual simulation of an SMG in the PRSIM engine}
 \label{smgEx}
 \end{figure}
@@ -687,40 +768,39 @@ Figure \ref{smgEx} shows execution of the SMG model that is comparable to MDP mo
 %Performing analysis on the model with the unbalance property as above reveals that in its current state, with both parties able to act corrupt, the model built does not give the probability of unbalance that its promises. This is not surprising due to the nature of the property being assessed; as mentioned previously, it only  The model was therefore expanded to accommodate the reduced actions possible by the non-corrupt party; the honestly behaving party, in this case O, was stripped of the ability to ignore the other party. 
 Performing analysis of the SMG equivalents of the models used in the previous stages of analysis yielded some interesting results. The first of which is that, when running the aforementioned property on an SMG style model with both parties acting in a corrupt way, there is a change in results when compared to the MDP equivalent. With $N$ as 4, there was a decrease in a number of states that were returned due to having a probability higher than $1+1/N$ from 1068 states with the MDP model to 439 states with the SMG model. This shows that the introduction of strategies does have an impact on which states are reachable, and therefore validates the introduction of the SMGs.
 
-Despite this stark difference in a completely corrupt instance of the protocol, there are similarities with how the models respond. When analysing unbalance in the models that represent a protocol instance with a single corrupt party, the results are identical despite the property for the SMG model being extended to accomodate the fact it's a single player's strategy. This leads to the observation that there is perhaps no difference between a corrupt party using a strategy alone and a strategy which also includes the honest party. This is due to the autonomous way the honest party works; it does not have the freedom to make many choices and has to operate based on the situation it has been presented with. This renders the strategy non effective in this situation, however it is important as it ensures results obtained fit with what has been described in the paper.
+Despite this stark difference in a completely corrupt instance of the protocol, there are similarities with how the models respond. When analysing unbalance in the models that represent a protocol instance with a single corrupt party, the results are identical despite the fact only one party is contributing to this strategy, rather than both. This leads to the observation that there is perhaps no difference between a corrupt party using a strategy alone and a strategy which also includes the honest party. This is due to the autonomous way the honest party works; it does not have the freedom to make many choices and has to operate based on the situation it has been presented with. This renders the strategy non effective in this situation, however it is important as it ensures results obtained fit with what has been described in the paper.
 
 
-\subsection{Results V2}
+\subsection{Findings with Strategies}
 
-As stated, it was still possible for states to be reached where the maximum probability of the unbalance property was higher than $(1+1/ N)$. Upon further inspection of the sates, there was a pattern emerging with the contacting of the Trusted Third Party; the majority of unbalanced states where ones where the honest party had contacted the TTP first. This then lead to the honest party having no safety for the remainder of the protocol, as if the corrupt party decided to stop sending commitments there was nothing the honest party could do; a troublesome issue, especially if the TTP had refused to satisfy the honest party's earlier request. It was decided that perhaps the intended sense of honesty was to just send bits until the party is given cause to do otherwise; it could be argued that although a party was behaving within the rules when contacting the TTP, that an "honest" party would see no reason to unless they had been betrayed in their trust of the other party.
+As stated, it was still possible for states to be reached where the maximum probability of the unbalance property was higher than $(1+1/ N)$. Upon further inspection of the states, there was a pattern emerging with the contacting of the Trusted Third Party; the majority of unbalanced states where ones where the honest party had contacted the TTP first. This then lead to the honest party having no safety for the remainder of the protocol, as if the corrupt party decided to stop sending commitments there was nothing the honest party could do; a troublesome issue, especially if the TTP had refused to satisfy the honest party's earlier request. It was decided that perhaps the intended sense of honesty was to just send commitments until the party is given cause to do otherwise; it could be argued that although a party was behaving within the rules when contacting the TTP, that an "honest" party would see no reason to unless they had been betrayed in their trust of the other party.
 
-\subsubsection{Changes to Requesting Logic}
+\subsubsection{Changes to Resolve Requests}
 
-To model this new change, more logic was added to the guard in the honest parties request command, so that the party can only contact the TTP if the number of commitments they have received is less than the number of commitments they have sent. This condition will only be met if the other party chooses to not send a commitment, and with the delivery constraint present in the property, the failure to deliver must be as a direct result from the decision to not send a commitment; commitments can't be lost in the buffer, all are to be delivered.\\
-There was also here a change to the request logic, in that parties could now make a request if the other party has had a response from the TTP. This meant that the dishonest party could no longer mask their interaction with the TTP; the paper was unclear as to whether the TTP kept parties informed of the other party's actions. If this is not the intention, it is something that should be considered; the role of the TTP is to offer an honest impartial mediator, and it is reasonable that such a mediator would inform all parties of key information. This also means the TTP can't be abused as a tool for achieving a corrupt goal such as the one laid out in the protocol, and described in \ref{sneak}. 
+To model this new approach to honesty, more logic was added to the guard in the honest parties request command. Now, an honest party can only contact the TTP if the number of commitments they have received is a suspicious amount, and not equal to the expect amount; too many or too few commitments will fulfil this. This means the honest party cannot just contact the TTP when it wants to; there now has to be suspicion of corrupt behaviour from the other party in order to send a resolve request.\\
+There was also here a change to the request logic, in that parties could now make a request if the other party has had a response from the TTP. This meant that the dishonest party could no longer mask their interaction with the TTP; the paper was unclear as to whether the TTP kept parties informed of the other party's actions. If this is not the intention, it is something that should be considered; the role of the TTP is to offer an honest impartial mediator, and it is reasonable that such a mediator would inform all parties of key information. This also means the TTP cannot be abused as a tool for achieving a corrupt goal such as the one laid out in the protocol, and described in \ref{sneak}. 
 
-\subsubsection{Changes to Response Logic}
 
-There was a further change to the modelling of the honest party in the way it handles the results from the TTP. Now that the honest party, currently O, can only contact the TTP when the other party has refused to cooperate, contacting the TTP is effectively the last thing the party can do. Once the party has received the result from the TTP, it is sensible for the party to end it's involvement in the protocol, noted here as the party's turn being set to 2. If this was not to happen, either the protocol ends up stuck in a dead state where no parties are able to act, or if the corrupt adversary starts sending commitments again, the honest party could resume sending commitments. This latter option is harmful to the honest party as previously described, as it would possible for the corrupt adversary to gain all the bits they require then desert the exchange; with the honest party now having no way of achieving the contract. This style of interaction accounted for a large number of the states that did not satisfy the property given to PRISM, and although it is non-trivial, it is simple to justify. 
+There was a further change to the modelling of the honest party in the way it handles the results from the TTP. Now that the honest party, suppose party $O$, can only contact the TTP when the other party has refused to cooperate, contacting the TTP is effectively the last thing the party can do. Once the party has received the result from the TTP, it is sensible for the party to end it's involvement in the protocol. If this was not to happen, either the protocol ends up stuck in a dead state where no parties are able to act, or if the corrupt adversary starts sending commitments again, the honest party could resume sending commitments. This latter option is harmful to the honest party as previously described, as it would possible for the corrupt adversary to gain all the bits they require then desert the exchange; with the honest party now having no way of achieving the contract. This style of interaction accounted for a large number of the states that did not satisfy the property given to PRISM, and although it is non-trivial, it is simple to justify. 
 
 \subsubsection{Corruptness: re-defined}
-It is important to note here that the definition of corrupt has been changed. A corrupt party is now considered to be one that only sends commitments when it should, only contacts the TTP when provoked by dishonest actions by the adversary, and that should the party need to contact the TTP it will take no future participation in the protocol instance.
+It is important to note here that the definition of honesty has been changed. An honest party is now considered to be one that only sends commitments when it should, only contacts the TTP when provoked by dishonest actions by the adversary, and that should the party need to contact the TTP it will take no future participation in the protocol instance.
 
 
 \subsection{Results V3}
 
 
 
-When running the protocol with R as the dishonest party, there were still states in which the unbalance property was met with a probability greater that $1+1/N$, although the number had reduced drastically since the redefinition of corrupt. Running the model with $N$ as 4, the number of renegade states fell from 210 to only 14. Looking at these states, it was initially unclear why; all of the states were ones where up until $sentBitsO$ was $N-1$, honest interaction had been displayed by both parties. When manually simulating these states, it wasn't possible to achieve a state that had one party obtaining the contract whilst blocking the other party. The reason why is shown in figure \ref{finalProblem}.
+When running the protocol with R as the dishonest party, there were still states in which the unbalance property was met with a probability greater that $1+1/N$, although the number had reduced drastically since the redefinition of corrupt. Running the model with $N$ as 4, the number of renegade states fell from 210 to only 14. Looking at these states, it was initially unclear why; all of the states were ones where up until $sentBitsO$ was $N-1$, honest interaction had been displayed by both parties. Figure \ref{finalProblem} shows how the probability is assessed.
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=140mm]{images/probelmExp.png}
-\caption{An explanation of the big problem}
+\caption{An explanation of how the probability of unbalance is assessed}
 \label{finalProblem}
 \end{figure}
 
-The issue here is how the property itself is presented within the paper. The property is represented as the addition of two sets of probabilities, each with their own strategy. This means that when calculating the probability, states do not have to fulfil both the conditions from the property simultaneously. As is the case here, states which can lead to the honest party gaining the contract or instead lead to the dishonest party being blocked from achieving the contract, fulfil the criteria. These states highlight the issue, being states where it is impossible to be able to go from and achieve the contract for R whilst guaranteeing O can never be satisfied. The figure below gives a literal example found when the protocol runs with $N$ as 4.
+%The issue here is how the property itself is presented within the paper. The property is represented as the addition of two sets of probabilities, each with their own strategy. This means that when calculating the probability, states do not have to fulfil both the conditions from the property simultaneously. As is the case here, states which can lead to the honest party gaining the contract or instead lead to the dishonest party being blocked from achieving the contract, fulfil the criteria. These states highlight the issue, being states where it is impossible to be able to go from and achieve the contract for R whilst guaranteeing O can never be satisfied. The figure below gives a literal example found when the protocol runs with $N$ as 4.
 
 \subsubsection{Example}
 
@@ -731,17 +811,38 @@ The issue here is how the property itself is presented within the paper. The pro
 \label{problemState}
 \end{figure}
 
-The image \ref{problemState} depicts the calculation of the probability from a single state that fulfils the majority of the property, except for the probability gained from it. This is a real state found during analysis, and in PRISM is represented as the state $(3,2,0,0,0,2,3,1,0,0,0,0,0,0,0,0)$. The first five numbers represent the values of the variables in the O module, the second five values in the R module and the final six represent the variable values present in the TTP. The state is such that both parties have acted honestly thus far; the TTP hasn't been contacted and there has been an appropriate number of commitments received by each team. It is currently party R's turn, denoted by 1 being the eighth digit in the state, and R has three commitments to the Originators two. It can be deduced that the parties have behaved honestly as even though R has been modelled to have the capacity to act in a corrupt manner, the variables in the TTP have not been changed since the start of the protocol, meaning there had been no contacting of the TTP.
+The image \ref{problemState} depicts the calculation of the probability from a single state that fulfils the majority of the property, except for the probability gained from it. This is a real state found during analysis, and the key variables are as follows:
+\begin{itemize}
+\item sentBitsO is equal to 3, meaning that the originator has at this stage sent three commitments
+\item recdBitsO is equal to 2, suggesting the originator has been sent 2 commitments
+\item The variable {\tt turnO} is equal to 0, showing it is not the turn of the originator
+\item sentBitsR is equal to 2, meaning that the responder has at this stage sent 2 commitments
+\item recdBitsR is equal to 3, suggesting the originator has been sent a total of 3 commitments
+\item The variable {\tt turnO} is equal to 1, showing it is the turn of the responder to act
+\end{itemize}
 
-The probability itself, as shown in the diagram, is actually the sum of the two probabilities featured in the property. It is not possible from here to fulfil both conditions of the property with a single strategy; this observation will be expanded on later. From this state, the corrupt party can achieve the contract with probability of 1; to do this, it would just need to keep sending the necessary commitments to the honest party. Also, there is the possibility for the corrupt party here to refuse to send a commitment; this forces the honest party to contact the TTP for a resolution. Due to the rules of the TTP, the honest party has an $N-i/N$ probability of not achieving the contract; here, that probability is 0.5. This give an overall probability of 1.5, higher than the $1+1/N$, or 1.25, required.
+All other variables, including those in the TTP, are set to 0. The fact none of the variables contained within the TTP means that no parties have attempted to contact the TTP, as does the {\tt contactX} and {\tt resultX} variables of both parties still equalling 0. As party $R$ hasn't contacted the TTP, and party $O$ has only sent one more commitment than party $R$, it can be deduced that the protocol is currently in the third round, with party $R$ yet to send their commitment for the round; it is also deducible that as no party has yet contacted the TTP, both parties have thus far behaved in an honest and non-corrupt manner.
+%and in PRISM is represented as the state $(3,2,0,0,0,2,3,1,0,0,0,0,0,0,0,0)$. The first five numbers represent the values of the variables in the O module, the second five values in the R module and the final six represent the variable values present in the TTP. The state is such that both parties have acted honestly thus far; the TTP hasn't been contacted and there has been an appropriate number of commitments received by each team. It is currently party R's turn, denoted by 1 being the eighth digit in the state, and R has three commitments to the Originators two. It can be deduced that the parties have behaved honestly as even though R has been modelled to have the capacity to act in a corrupt manner, the variables in the TTP have not been changed since the start of the protocol, meaning there had been no contacting of the TTP.
+
+The probability itself, as shown in the diagram, is actually the sum of the two probabilities featured in the property. It is not possible from here to fulfil both conditions of the property with a single strategy; this observation will be expanded on later. From this state, the corrupt party can achieve the contract with probability of 1; to do this, it would just need to act like an honest party and continue sending gradual commitments. Also, there is the possibility for the corrupt party here to refuse to send a commitment; this forces the honest party to contact the TTP for a resolution. Due to the rules of the TTP, the honest party has an $N-i/N$ probability of not achieving the contract; here, that probability is 0.5. This give an overall probability of 1.5, higher than the $1+1/N$, or 1.25, required.
 
 \subsection{Comparison between O and R as corrupt}
-It is worth noting here that when swapping the honest and dishonest parties around, there is a similar number of states that do not fulfil the protocol. Looking at the states themselves, they are the equivalents of one another, with the party often being the opposite. This is due to the strategy component; a party can only guarantee what is going to happen next if it is that parties turn. The actual number of rogue states is equivalent to\\
+It is worth noting here that when swapping the honest and dishonest parties around, there is a similar number of states that do not fulfil the protocol. Looking at the states themselves, they are the equivalents of one another, with the party often being the opposite. This is due to the strategy component; a party can only guarantee what is going to happen next if it is that parties turn.The graph shown at figure \ref{finalGraph} shows the result of two PRISM experiments performed; one experiment on the unbalance property with party $O$ as corrupt, and one with party $R$ corrupt. The ranges for $N$ here range from 2 to 30 with an interval of 1 for each value; the range would run from 1, however there is currently an issue with PRISM running experiments beginning with 1.
 
-\centerline{$N\left ( \frac{N + i}{2} \right )$}
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=140mm]{images/finalGraph.png}
+\caption{Output of experiments on unbalance property for final models}
+\label{finalGraph}
+\end{figure}
 
-This is due to the states that arise; as the the number of rounds increase, the number of states each round that break this protocol decrease and tend towards 0. This gives the exponential style growth, with the division by 2 being caused by the tending towards 0.\\
-The fact the number of states is identical when swapping the parties roles means that the culmination of efforts to keep the protocol fair for both parties is successful; there isn't an advantage for either party to try and cheat. The additional logic in the TTP for comparisons of requests combined with the ability for party $O$ to make a resolve request without having received a commitment mitigates the risk associated with having to make the first transaction in the gradual commitment protocol.
+The output of the experiment shows two things of importance; firstly, the number of states is identical when swapping the parties roles means that the culmination of efforts to keep the protocol fair for both parties is successful; there isn't an advantage for either party to try and cheat. The additional logic in the TTP for comparisons of requests combined with the ability for party $O$ to make a resolve request without having received a commitment mitigates the risk associated with having to make the first transaction in the gradual commitment protocol. The second thing the graph shows is that the actual number of rogue states is equivalent to\\
+
+\centerline{$N\left ( \frac{N + 1}{2} \right )$}.
+
+This is due to the states that arise; the outer $N$ is because there are rogue states for each round the protocol executes for. each is associated with the number of sent commitments by the honest party, which here will be referred to as $i$. The inner fraction, $\frac{N + 1}{2}$, is slightly more complex to explain. For each round that is executed, the number of states that go against the protocol decreases by 1, tending to zero. The number of commitments the corrupt party is able to send ranges from $i-1$ to $N-1$, with an extra state when the number of the honest party's received commitments equals the number of commitments sent by the corrupt party. This extra state is different as all the other states are ones where it is the corrupt parties turn to act; in the extra state, it is the honest party's turn.
+
+The reason for this is the number of commitments a corrupt party can still send is ever decreasing as the protocol continues; the majority of states represent the system after the corrupt party has willingly sent too many commitments, and as the protocol runs there are simply less ``extra'' commitments that can be sent.
 
 \subsection{Observation of Strategy and Honesty}
 
@@ -749,7 +850,7 @@ A pattern also emerged regarding the parties who participated in the strategy bu
 
 \section{My Property}
 
-The results on the face of it seem to suggest that there is a problem with the unbalance property. The analysis suggests it fails to deliver on the probabilities highlighted in the paper, and therefore does not have the benefits it's designed to bring. However, I don't think there's an issue with the model, I feel the issue is rooted in the description of the probability. Again the argument goes back to semantics; as before it was difficult to assess what was considered corrupt, now there is questionable results being affected by what is considered unbalanced. 
+The results on the face of it seem to suggest that there is a problem with the unbalance property. The analysis suggests it fails to deliver on the probabilities highlighted in the paper, and therefore does not have the benefits it's designed to bring. However, I don't think there's an issue with the model, I feel the issue is rooted in the description of the property. Again the argument goes back to semantics; as before it was difficult to assess what was considered corrupt, now there is questionable results being affected by what is considered unbalanced. 
 
 The unbalance property looks at the probabilities of two separate options and adds them together, as shown in figure \ref{finalProblem}. It is my recommendation that the protocol be amended in the following way;\\
 
@@ -757,7 +858,7 @@ The unbalance property looks at the probabilities of two separate options and ad
 
 The difference here is that there is a single strategy to achieve one outcome, rather than one for obtaining the contract and one for stopping the other party. This property would be fulfilled if there was a single strategy that both guaranteed the corrupt party the contract whilst guaranteeing that at no state can the honest party achieve the contract. This is essentially the same property as used during the analysis of the MDP model, however players and strategies can now be added as this is a property for an SMG style model. The property inside PRISM now has the following structure:
 \begin{lstlisting}
-<<2>> Pmax=? [G ((recdBitsR=N+1 | resultR=1)&!(recdBitsO=N+1 | resultO=1))]
+<<2>> Pmax=? [FfG ((recdBitsR=N+1 | resultR=1)&!(recdBitsO=N+1 | resultO=1))]
 \end{lstlisting}
 This property lists the states where the Responder has the capability to use a strategy that would both see them obtain the contract and guarantee the other party can not finish successfully, as well as the maximum probability of this happening for each state. Although there are states which technically fulfil the majority of the criteria, all of the ones found have a probability of zero. This is BRILLIANT, as it means that the protocol does not allow one party to have a real advantage over the other party, and either both parties are equally successful at obtaining the contract. 
 
@@ -769,10 +870,11 @@ Models were constructed allowing the protocol described to be analysed, primaril
 
 It has been shown that when considering strategies, there is no difference between two parties creating a strategy together, and one party creating a strategy against a predictable opponent. These two approaches yielded the same results when being analysed against the unbalance property.
 
-The protocol also has been shown to provide equal oppertunities for both parties involved; there is no advantage to being the originator or responder with respect to being balanced as described in the property. This is greatly to the protocol's credit; the paper acknowledged the importance of ensuring there was no advantage to being a particular party, and steps were successfully taken to ensure that this was the case. This is done by careful consideration with the regards to the logic applied by the TTP and the differences between the originator and responder resolution requests.
+The protocol also has been shown to provide equal opportunities for both parties involved in terms of unbalance; there is no advantage to being the originator or responder with respect to being balanced as described in the property. This is greatly to the protocol's credit; the paper acknowledged the importance of ensuring there was no advantage to being a particular party, and steps were successfully taken to ensure that this was the case. This is done by careful consideration with the regards to the logic applied by the TTP and the differences between the originator and responder resolution requests.
 
-The protocol has also been shown to not posses the properties advertised. Whilst it does allow two participants to swap contracts, fulfilling the base requirements of a contract signing protocol, it lacks the benefits the protocol needs to be of any use. Whilst the design of the TTP and the gradual commitment protocol eliminates a large number of situations considered to be unbalanced from arising, it does not provide the advertised property. As such, the protocol does not improve on other, tested, CSPs, such as Rabins, which also offers a similar maximum level of unbalance with a better definition of unbalance.
-
+The protocol has also been shown to not posses the properties advertised. Whilst it does allow two participants to swap contracts, fulfilling the base requirements of a contract signing protocol, it lacks the benefits the protocol needs to be of any use. Whilst the design of the TTP and the gradual commitment protocol eliminates a large number of situations considered to be unbalanced from arising, it does not provide the advertised property. As such, the protocol does not improve on other, tested, CSPs, such as Rabins, which also offers a similar maximum level of unbalance with a better definition of unbalance.\\
+The authors of the protocol state that the property holds, meaning either there is a problem with their arguments featured in the proof, or the lack of clarity has led to a difference of opinion on components of the protocol and the model thusly does not model the author's interpretation of the protocol.
+There is a similar lack of clarity in the proof itself; whilst full analysis of this is outside the scope of this project, it has been noted that assumptions have been made which have no mathematical reasoning provided.
 
 
 \section{Future Work}
