@@ -8,7 +8,7 @@ endplayer
 
 player playerR
  partyR, [sendR], [reqR], [replyR]
-endplayer
+endplayer 
 
 module partyO
         sentBitsO : [0..N+1]; //no. bits sent by part
