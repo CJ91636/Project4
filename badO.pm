@@ -91,6 +91,6 @@ module tTP
         [reqR] (sendO=0 & sendR=0) & responseR=0 & responseO=2 & iO+1>=recdBitsR -> (responseR'=2) & (sendR'=1) ;
 
         [replyO] sendO=1 -> (sendO'=0) ;
-        [replyR] sendR=1 -> (sendR'=0) ;
+        [replyR] sendR=1 -> (sendR'=0) ; 
 
 endmodule
