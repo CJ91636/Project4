@@ -11,7 +11,7 @@ player playerR
 endplayer 
 
 module partyO
-        sentBitsO : [0..N+1]; //no. bits sent by part
+        sentBitsO : [0..N+1]; //no. bits sent by part 
         recdBitsO : [0..N+1]; //no. bits recieved by party
         turnO : [0..2]; //0 for not parties turn, 1 for parties turn, 2 for exhange end
 	contactO : [0..1]; //1 represents contacted TTP
