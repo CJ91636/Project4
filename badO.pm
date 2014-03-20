@@ -38,7 +38,7 @@ endmodule
 
 module partyR
         sentBitsR : [0..N+1];
-        recdBitsR : [0..N+1];
+        recdBitsR : [0..N+1]; 
         turnR : [0..2];
 	contactR : [0..1];  
 	resultR : [0..2];
